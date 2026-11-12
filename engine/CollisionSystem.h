@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ScoreComponent.h"
+#include "LocationComponent.h"
+
 namespace ECSEngine {
 
 template <typename... Components>
@@ -52,7 +55,7 @@ public:
                 }
                 CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(e2.GetID());
                 
-                std::vector<bool> overlaps{4};
+                std::vector<bool> overlaps{false, false, false, false};
                 RectOverlap(c1.collisionBox, c2.collisionBox, overlaps);
                 if (!(overlaps[0] || overlaps[1] || overlaps[2] || overlaps[3])) {
                     // collision
@@ -72,7 +75,7 @@ public:
                             } else {
                                 // not the player, bounce
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
-                                m2.velocity = {m2.velocity.x * -0.9, starBounceHeight};
+                                m2.velocity = {m2.velocity.x * -0.9f, starBounceHeight};
                             }
                         }
                     } else {
@@ -89,7 +92,7 @@ public:
                             } else {
                                 // not the player, bounce
                                 MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
-                                m1.velocity = {m1.velocity.x * -0.9, starBounceHeight};
+                                m1.velocity = {m1.velocity.x * -0.9f, starBounceHeight};
                             }
                         } else {
                             // both dynamic
@@ -107,8 +110,8 @@ public:
                                 // 2 stars - bounce
                                 MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
-                                m1.velocity = {m1.velocity.x * -0.9, starBounceHeight};
-                                m2.velocity = {m2.velocity.x * -0.9, starBounceHeight};
+                                m1.velocity = {m1.velocity.x * -0.9f, starBounceHeight};
+                                m2.velocity = {m2.velocity.x * -0.9f, starBounceHeight};
                             }
                         }
                     }
@@ -124,16 +127,16 @@ private:
     // the previous frame's bounding boxes
     void StaticDynamicCollide(Entity staticO, Entity dynamic, EngineView<Components...>* engine) {
         EntityManager<Components...> eManager = engine->GetEntityManager();
-        CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(staticO->GetID());
-        CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(dynamic->GetID());
+        CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(staticO.GetID());
+        CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(dynamic.GetID());
 
-        std::vector<bool> oldOverlaps{4};
+        std::vector<bool> oldOverlaps{false, false, false, false};
         RectOverlap(c1.previousCollisionBox, c2.previousCollisionBox, oldOverlaps);
         if (oldOverlaps[2]) {
             c2.onCeiling = 1;
             float diff = c2.collisionBox.topLeft.y - (c1.collisionBox.topLeft.y + c1.collisionBox.height);
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic->GetID());
-            l2.loc -= Point2D{0, diff - 1};
+            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            l2.loc = l2.loc - Point2D(0.f, diff - 1);
         } else if (oldOverlaps[3]) {
             if (!c2.onGround) {
                 // just landed
@@ -141,8 +144,8 @@ private:
             }
             c2.onGround = 1;
             float diff = c2.collisionBox.topLeft.y + c2.collisionBox.height - c1.collisionBox.topLeft.y;
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic->GetID());
-            l2.loc -= Point2D{0, diff + 1};
+            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            l2.loc = l2.loc - Point2D(0.f, diff + 1);
         }
         if (oldOverlaps[0]) {
             if (!c2.onRightWall) {
@@ -151,20 +154,20 @@ private:
             }
             c2.onRightWall = 1;
             float diff = c2.collisionBox.topLeft.x + c2.collisionBox.width - c1.collisionBox.topLeft.x;
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic->GetID());
-            l2.loc -= Point2D{diff + 1, 0};
+            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            l2.loc = l2.loc - Point2D{diff + 1, 0.f};
         } else if (oldOverlaps[1]) {
             if (!c2.onLeftWall) {
                 // just hit wall
             }
             c2.onLeftWall = 1;
             float diff = c2.collisionBox.topLeft.x - (c1.collisionBox.topLeft.x + c1.collisionBox.width);
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic->GetID());
-            l2.loc -= Point2D{diff - 1, 0};
+            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            l2.loc = l2.loc - Point2D{diff - 1, 0.f};
         }
     }
 
-    void Damage(Entity e, EntityManager eManager) {
+    void Damage(Entity e, EntityManager<Components...> eManager) {
         if (eManager.HasComponent<RespawnComponent>(e.GetID())) {
             RespawnComponent r = eManager.GetComponent<RespawnComponent>(e.GetID());
             LocationComponent l = eManager.GetComponent<LocationComponent>(e.GetID());
@@ -174,6 +177,28 @@ private:
             m.velocity = {0, 0};
         } else {
             eManager.RemoveEntity(e.GetID());
+        }
+    }
+
+    // detects overlaps between rects and returns whether there is a
+    // separation in each direction using ret, in the following order:
+    // ret[0]: r1 is to the left of r2
+    // ret[1]: r1 is to the right of r2
+    // ret[2]: r1 is above r2
+    // ret[3]: r1 is below r2
+    void RectOverlap(Rect r1, Rect r2, std::vector<bool> &ret) {
+        ret[0] = ret[1] = ret[2] = ret[3] = false;
+        if (r1.topLeft.x > r2.topLeft.x + r2.width) {
+            ret[1] = true;
+        }
+        if (r1.topLeft.x + r2.width < r2.topLeft.x) {
+            ret[0] = true;
+        }
+        if (r1.topLeft.y + r1.height < r2.topLeft.y) {
+            ret[2] = true;
+        }
+        if (r1.topLeft.y > r2.topLeft.y + r2.height) {
+            ret[3] = true;
         }
     }
 

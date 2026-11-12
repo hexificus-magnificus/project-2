@@ -50,6 +50,8 @@ public:
 private:
     bool ProcessEvents();
     void DebugDraw();
+    void PressKey(unsigned int k);
+    void ReleaseKey(unsigned int k);
 
     EntityManager<Components...> mEntityManager;
     SystemManager<Components...> mSystemManager;
@@ -96,12 +98,39 @@ bool ECSEngine<Components...>::ProcessEvents() {
         } else if (event->is<sf::Event::Resized>()) {
             
         } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
-            int key = static_cast<int>(keyPressed->scancode);
-            if (keyPressed->scancode == sf::Keyboard::Scan::Escape) {
+            sf::Keyboard::Scan key = keyPressed->scancode;
+            if (key == sf::Keyboard::Scan::Escape) {
                 debug = !debug;
+            } else if (key == sf::Keyboard::Scan::Right) {
+
+            } else if (key == sf::Keyboard::Scan::Left) {
+                
+            } else if (key == sf::Keyboard::Scan::Up) {
+
+            } else if (key == sf::Keyboard::Scan::Down) {
+
+            } else if (key == sf::Keyboard::Scan::Z) {
+
+            } else if (key == sf::Keyboard::Scan::C) {
+
             }
         } else if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+            sf::Keyboard::Scan key = keyReleased->scancode;
+            if (key == sf::Keyboard::Scan::Escape) {
+                
+            } else if (key == sf::Keyboard::Scan::Right) {
 
+            } else if (key == sf::Keyboard::Scan::Left) {
+                
+            } else if (key == sf::Keyboard::Scan::Up) {
+
+            } else if (key == sf::Keyboard::Scan::Down) {
+
+            } else if (key == sf::Keyboard::Scan::Z) {
+
+            } else if (key == sf::Keyboard::Scan::C) {
+                
+            }
         }
     }
     return true;
@@ -111,5 +140,15 @@ template <typename... Components>
 void ECSEngine<Components...>::DebugDraw() {
     mWindowManager.DebugFrameRect(mWindowManager.GetWindowBounds(), 255, 0, 0);
     mWindowManager.GetWindow()->display();
+}
+
+template <typename... Components>
+void ECSEngine<Components...>::PressKey(unsigned int k) {
+    ComponentStorage<InputComponent> storage = mEntityManager.GetComponentStorage<InputComponent>();
+    for (int i = 0; i < storage.mStorage.size(); i++) {
+        if (!storage.mValid[i]) {
+            continue;
+        }
+    }
 }
 }  // namespace ECSEngine

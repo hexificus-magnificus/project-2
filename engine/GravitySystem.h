@@ -23,7 +23,7 @@ public:
 			if (grav.disabledTimer > 0) {
 				grav.disabledTimer--;
 			} else {
-				vel.velocity += grav.acceleration;
+				vel.velocity = vel.velocity + grav.acceleration;
 			}
 		}
 		return kContinue;
