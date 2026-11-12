@@ -1,5 +1,7 @@
 #pragma once
-
+#include <random>
+#include <vector>
+#include <cstdlib>
 namespace ECSEngine {
 
 template <typename... Components>
@@ -10,7 +12,62 @@ public:
         return name;
     }
 
-    tSystemReturn Run(EngineView<Components...>* engine) override { return kContinue; }
+    tSystemReturn Run(EngineView<Components...>* engine) override {
+        auto& entityManager = engine->GetEntityManager();
+        std::vector<EntityID> spawners;
+        for (const Entity& entity: entityManager){
+            EntityID id = entity.GetID();
+            if (entityManager.IsValid(id)&&entityManager.HasComponent<SpawnComponent>(id)){
+                SpawnComponent& spawn = entityManager.GetComponent<SpawnComponent>(entity.GetID());
+
+                if (spawn.totalSpawns>0){
+                    spawn.timeToNextSpawn--;
+                    if (spawn.timeToNextSpawn<=0){
+                        spawners.push_back(id);
+                        spawn.timeToNextSpawn = spawn.timeBetweenSpawns;
+                        spawn.totalSpawns--;
+                    }
+
+                }
+            }
+        }
+        for (EntityID spawnerID : spawners){
+
+            auto& spawn = entityManager.GetComponent<SpawnComponent>(spawnerID);
+            EntityID spawnedID = entityManager.CreateEntity(spawn.spawnType);
+
+            LocationComponent& spawnLocation = entityManager.GetComponent<LocationComponent>(spawnerID);
+            LocationComponent location;
+            location.loc = spawnLocation.loc;
+            entityManager.AddComponent<LocationComponent>(spawnedID, location);
+
+            SpriteComponent spriteComponent;
+            spriteComponent.textureID = spawn.spawnTextureID;
+            spriteComponent.worldSpace = true;
+            auto& sprite = engine->GetSpriteManager().GetSprite(spawn.spawnTextureID);
+            auto bounds = sprite.getLocalBounds();
+            spriteComponent.bounds.topLeft = {bounds.position.x, bounds.position.y};
+            spriteComponent.bounds.width = bounds.size.x;
+            spriteComponent.bounds.height = bounds.size.y;
+            entityManager.AddComponent<SpriteComponent>(spawnedID, spriteComponent);
+
+
+            MovementComponent movement;
+            int randVelocityx = (rand() % 201) - 100; //https://stackoverflow.com/a/12657984
+            int randVelocityy = (rand() % 201) - 100; 
+            movement.velocity = Point2D(randVelocityx, randVelocityy);
+            entityManager.AddComponent<MovementComponent>(spawnedID, movement);
+
+            CollisionComponent collision{}; //initializes collision flags to 0 ChatGPT (may change)
+            collision.staticEntity = false;
+            collision.doesDamage = false;
+            collision.collisionBox = spriteComponent.bounds;
+            collision.previousCollisionBox = collision.collisionBox;
+            entityManager.AddComponent<CollisionComponent>(spawnedID, collision);       
+            
+        }
+        return kContinue; 
+    }
 };
 
 }  // namespace ECSEngine
