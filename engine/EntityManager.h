@@ -28,6 +28,7 @@ public:
         } else {
             mEntities.push_back({id, name});
             mEntitiesValid.push_back(true);
+            mComponentIndices.push_back({});
         }
 
         for (int i = 0; i < sizeof...(Components); i++) {
@@ -52,9 +53,15 @@ public:
         if (!storage.mFreeList.empty()) {
             storageIdx = storage.mFreeList.back();
             storage.mFreeList.pop_back();
+
+            storage.mStorage[storageIdx] = component;
+            storage.mValid[storageIdx] = true;
+        }else{
+            storageIdx = storage.mStorage.size();
+            storage.mStorage.push_back(component);
+            storage.mValid.push_back(true);
         }
-        storage.mStorage[storageIdx] = component;
-        storage.mValid[storageIdx] = true;
+        
 
         mComponentIndices[entity][componentIdx] = storageIdx;
     }

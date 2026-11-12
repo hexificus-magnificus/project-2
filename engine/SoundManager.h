@@ -8,7 +8,7 @@ namespace ECSEngine {
 
 class SoundManager {
 public:
-    SoundManager() : nullBuffer{""}, nullSound{nullBuffer} {};
+    SoundManager() : nullBuffer{}, nullSound{nullBuffer} {};
     ~SoundManager() = default;
     void RegisterSound(const std::string& soundPath, const std::string& soundName);
     sf::Sound& GetSound(const std::string& soundName);
