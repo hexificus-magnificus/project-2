@@ -1,7 +1,9 @@
 #pragma once
 
 #include <unordered_map>
-
+#include "CameraComponent.h"
+#include "Entity.h"
+#include "EntityManager.h"
 #include "LocationComponent.h"
 #include "MathUtil.h"
 #include "SpriteComponent.h"
