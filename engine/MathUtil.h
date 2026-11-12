@@ -6,11 +6,12 @@
 namespace ECSEngine {
 
 #include <cstdio>
+#include <vector>
 
 struct Point2D {
     float x, y;
     Point2D(float x = 0, float y = 0) : x(x), y(y) {}
-    Point2D(int x, int y) : x(x), y(y) {}
+    Point2D(int x, int y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {} //this line used to be Point2D(int x, int y) : x(x), y(y) {}
 };
 
 [[maybe_unused]] static std::ostream& operator<<(std::ostream& os, const Point2D& p) {
@@ -53,12 +54,12 @@ struct Rect {
 // ret[1]: r1 is to the right of r2
 // ret[2]: r1 is above r2
 // ret[3]: r1 is below r2
-void RectOverlap(Rect r1, Rect r2, std::vector<bool> &ret) {
+inline void RectOverlap(Rect r1, Rect r2, std::vector<bool> &ret) {
     ret[0] = ret[1] = ret[2] = ret[3] = false;
     if (r1.topLeft.x > r2.topLeft.x + r2.width) {
         ret[1] = true;
     }
-    if (r1.topLeft.x + r2.width < r2.topLeft.x) {
+    if (r1.topLeft.x + r1.width < r2.topLeft.x) {
         ret[0] = true;
     }
     if (r1.topLeft.y + r1.height < r2.topLeft.y) {
