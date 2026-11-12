@@ -5,9 +5,11 @@
 #include "CameraComponent.h"
 #include "CollisionComponent.h"
 #include "EntityManager.h"
+#include "Keyboard.h"
 #include "InputComponent.h"
 #include "LocationComponent.h"
 #include "MathUtil.h"
+#include "Keyboard.h"
 #include "ScoreComponent.h"
 #include "SoundManager.h"
 #include "SpawnComponent.h"
@@ -101,35 +103,36 @@ bool ECSEngine<Components...>::ProcessEvents() {
             sf::Keyboard::Scan key = keyPressed->scancode;
             if (key == sf::Keyboard::Scan::Escape) {
                 debug = !debug;
+                PressKey(Key::Escape);
             } else if (key == sf::Keyboard::Scan::Right) {
-
+                PressKey(Key::Right);
             } else if (key == sf::Keyboard::Scan::Left) {
-                
+                PressKey(Key::Left);
             } else if (key == sf::Keyboard::Scan::Up) {
-
+                PressKey(Key::Up);
             } else if (key == sf::Keyboard::Scan::Down) {
-
+                PressKey(Key::Down);
             } else if (key == sf::Keyboard::Scan::Z) {
-
+                PressKey(Key::Z);
             } else if (key == sf::Keyboard::Scan::C) {
-
+                PressKey(Key::C);
             }
         } else if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
             sf::Keyboard::Scan key = keyReleased->scancode;
             if (key == sf::Keyboard::Scan::Escape) {
-                
+                ReleaseKey(Key::Escape);
             } else if (key == sf::Keyboard::Scan::Right) {
-
+                ReleaseKey(Key::Right);
             } else if (key == sf::Keyboard::Scan::Left) {
-                
+                ReleaseKey(Key::Left);
             } else if (key == sf::Keyboard::Scan::Up) {
-
+                ReleaseKey(Key::Up);
             } else if (key == sf::Keyboard::Scan::Down) {
-
+                ReleaseKey(Key::Down);
             } else if (key == sf::Keyboard::Scan::Z) {
-
+                ReleaseKey(Key::Z);
             } else if (key == sf::Keyboard::Scan::C) {
-                
+                ReleaseKey(Key::C);
             }
         }
     }
@@ -149,6 +152,19 @@ void ECSEngine<Components...>::PressKey(unsigned int k) {
         if (!storage.mValid[i]) {
             continue;
         }
+        storage.mStorage[i].keydown.set(k, true);
     }
 }
+
+template <typename... Components>
+void ECSEngine<Components...>::ReleaseKey(unsigned int k) {
+    ComponentStorage<InputComponent> storage = mEntityManager.GetComponentStorage<InputComponent>();
+    for (int i = 0; i < storage.mStorage.size(); i++) {
+        if (!storage.mValid[i]) {
+            continue;
+        }
+        storage.mStorage[i].keydown.set(k, false);
+    }
+}
+
 }  // namespace ECSEngine
