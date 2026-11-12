@@ -167,11 +167,11 @@ private:
         }
     }
 
-    void Damage(Entity e, EntityManager<Components...> eManager) {
-        if (eManager.HasComponent<RespawnComponent>(e.GetID())) {
+    void Damage(Entity e, EntityManager<Components...>& eManager) {
+        if (eManager.template HasComponent<RespawnComponent>(e.GetID())) {
             RespawnComponent r = eManager.GetComponent<RespawnComponent>(e.GetID());
-            LocationComponent l = eManager.GetComponent<LocationComponent>(e.GetID());
-            MovementComponent m = eManager.GetComponent<MovementComponent>(e.GetID());
+            LocationComponent& l = eManager.GetComponent<LocationComponent>(e.GetID());
+            MovementComponent& m = eManager.GetComponent<MovementComponent>(e.GetID());
 
             l.loc = r.loc;
             m.velocity = {0, 0};
