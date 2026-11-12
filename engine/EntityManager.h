@@ -45,7 +45,7 @@ public:
     template <typename T>
     void AddComponent(EntityID entity, T component) {
         size_t componentIdx = mComponentPack.index<T>;
-        ComponentStorage<T> storage = GetComponentStorage<T>();
+        ComponentStorage<T>& storage = GetComponentStorage<T>();
         size_t storageIdx = storage.mStorage.size();
         
         
@@ -79,7 +79,7 @@ public:
     T& GetComponent(EntityID entity) {
         size_t componentIdx = mComponentPack.index<T>;
         size_t storageIdx = mComponentIndices[entity][componentIdx];
-        ComponentStorage<T> storage = GetComponentStorage<T>();
+        ComponentStorage<T>& storage = GetComponentStorage<T>();
         return storage.mStorage[storageIdx];
     }
 
@@ -89,7 +89,6 @@ public:
     }
 
     bool IsValid(EntityID entity) const {
-
     }
 
     using const_iterator = std::vector<Entity>::const_iterator;
