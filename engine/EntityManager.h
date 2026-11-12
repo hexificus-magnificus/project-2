@@ -15,7 +15,7 @@ namespace ECSEngine {
 template <typename... Components>
 class EntityManager {
 public:
-    EntityManager EntityManager() {}
+    EntityManager() {}
 
     static constexpr size_t kNullComponent = std::numeric_limits<size_t>::max();
     [[nodiscard]] EntityID CreateEntity(const std::string& name) {
@@ -45,8 +45,9 @@ public:
     template <typename T>
     void AddComponent(EntityID entity, T component) {
         size_t componentIdx = mComponentPack.index<T>;
-        size_t storageIdx = storage.mStorage.size();
         ComponentStorage<T> storage = GetComponentStorage<T>();
+        size_t storageIdx = storage.mStorage.size();
+        
         
         if (!storage.mFreeList.empty()) {
             storageIdx = storage.mFreeList.back();
