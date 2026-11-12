@@ -34,6 +34,10 @@ public:
 
 private:
     std::shared_ptr<sf::RenderWindow> mWindow;
+    Point2D mWorldCenter;
+    Point2D mCameraCenter;
+    float mWorldScale;
+    
 };
 
 }  // namespace ECSEngine
