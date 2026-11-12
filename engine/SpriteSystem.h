@@ -24,7 +24,7 @@ public:
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto eManager = engine->GetEntityManager();
         auto wManager = engine->GetWindowManager();
-        for (auto e = eManager.cbegin(); e < eManager.cend(); e++) {
+        for (auto e = eManager.cbegin(); e != eManager.cend(); e++) {
             if (!eManager.HasComponent<SpriteComponent>(e->GetID())) {
                 continue;
             }
