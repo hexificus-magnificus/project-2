@@ -89,8 +89,10 @@ public:
     }
 
     bool IsValid(EntityID entity) const {
+        return mEntitiesValid[entity];
     }
 
+    std::vector<Entity> mEntities;
     using const_iterator = std::vector<Entity>::const_iterator;
     const_iterator cbegin() const { return mEntities.cbegin(); }
     const_iterator cend() const { return mEntities.cend(); }
@@ -98,7 +100,6 @@ public:
     const_iterator end() { return mEntities.end(); }
 private:
     std::tuple<ComponentStorage<Components>...> mComponents;
-    std::vector<Entity> mEntities;
     std::vector<bool> mEntitiesValid;
     std::vector<size_t> mFreeEntities;
     std::vector<std::array<size_t, sizeof...(Components)>> mComponentIndices;
