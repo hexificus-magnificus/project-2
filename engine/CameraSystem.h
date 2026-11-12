@@ -49,12 +49,12 @@ public:
                     Point2D center = windowManager.GetWorldCenter();
                     center.x += windowManager.WindowToWorld(cameraChange);
                     windowManager.SetWorldCenter(center);
-              
+                    break;
+                }
+            }
         }
-        
-    }}
+        return kContinue;
 
-        return kContinue; 
     }
 };
 
