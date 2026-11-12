@@ -21,7 +21,31 @@ public:
         return name;
     }
 
-    tSystemReturn Run(EngineView<Components...>* engine) override { return kContinue; }
+    tSystemReturn Run(EngineView<Components...>* engine) override {
+        auto eManager = engine->GetEntityManager();
+        auto wManager = engine->GetWindowManager();
+        for (auto e = eManager.cbegin(); e < eManager.cend(); e++) {
+            if (!eManager.HasComponent<SpriteComponent>(e->GetID())) {
+                continue;
+            }
+            SpriteComponent spriteC = eManager.GetComponent<SpriteComponent>(e->GetID());
+            // in provided files, it says SpriteComponent only exists when LocationComponent does
+            LocationComponent loc = eManager.GetComponent<LocationComponent>(e->GetID());
+
+            sf::Sprite sprite = engine->GetSpriteManager().GetSprite(spriteC.textureID);
+            if (spriteC.worldSpace) {
+                sprite.setScale({wManager.GetWorldScale(), wManager.GetWorldScale()});
+                Point2D wLoc = wManager.WorldToWindow(loc.loc);
+                sprite.setPosition({wLoc.x, wLoc.y});
+            } else {
+                sprite.setPosition({loc.loc.x, loc.loc.y});
+            }
+
+            wManager.GetWindow()->draw(sprite);
+        }
+        wManager.GetWindow()->display();
+        return kContinue;
+    }
 };
 
 }  // namespace ECSEngine
