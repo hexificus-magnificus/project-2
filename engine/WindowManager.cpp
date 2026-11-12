@@ -18,7 +18,7 @@ Rect WindowManager::GetWindowBounds() const {
 // assumes DebugDrawRect takes rect with world coordinates
 void WindowManager::DebugDrawRect(const Rect& r, int red, int green, int blue, int alpha) {
     sf::RectangleShape rect = sf::RectangleShape(sf::Vector2f(WorldToWindow(r.width), WorldToWindow(r.height)));
-    sf::Color col = sf::Color(red, green, blue, alpha);
+    sf::Color col = sf::Color(static_cast<std::uint8_t>(red), static_cast<std::uint8_t>(green), static_cast<std::uint8_t>(blue), static_cast<std::uint8_t>(alpha));
     rect.setFillColor(col);
     Point2D windowTopLeft = WorldToWindow(r.topLeft);
     rect.setPosition(sf::Vector2f(windowTopLeft.x, windowTopLeft.y));
@@ -28,7 +28,7 @@ void WindowManager::DebugDrawRect(const Rect& r, int red, int green, int blue, i
 // assumes DebugFrameRect takes rect with world coordinates
 void WindowManager::DebugFrameRect(const Rect& r, int red, int green, int blue, int alpha) {
     sf::RectangleShape rect = sf::RectangleShape(sf::Vector2f(WorldToWindow(r.width), WorldToWindow(r.height)));
-    sf::Color col = sf::Color(red, green, blue, alpha);
+    sf::Color col = sf::Color(static_cast<std::uint8_t>(red), static_cast<std::uint8_t>(green), static_cast<std::uint8_t>(blue), static_cast<std::uint8_t>(alpha));
     rect.setFillColor(sf::Color::Transparent);
     rect.setOutlineColor(col);
     rect.setOutlineThickness(1.0f);
