@@ -33,10 +33,11 @@ public:
         }
         for (EntityID spawnerID : spawners){
 
-            auto& spawn = entityManager.GetComponent<SpawnComponent>(spawnerID);
+            auto spawn = entityManager.GetComponent<SpawnComponent>(spawnerID);
+            LocationComponent spawnLocation = entityManager.GetComponent<LocationComponent>(spawnerID);
+
             EntityID spawnedID = entityManager.CreateEntity(spawn.spawnType);
 
-            LocationComponent& spawnLocation = entityManager.GetComponent<LocationComponent>(spawnerID);
             LocationComponent location;
             location.loc = spawnLocation.loc;
             entityManager.AddComponent<LocationComponent>(spawnedID, location);
