@@ -47,6 +47,28 @@ struct Rect {
     float width, height;
 };
 
+// detects overlaps between rects and returns whether there is a
+// separation in each direction using ret, in the following order:
+// ret[0]: r1 is to the left of r2
+// ret[1]: r1 is to the right of r2
+// ret[2]: r1 is above r2
+// ret[3]: r1 is below r2
+void RectOverlap(Rect r1, Rect r2, std::vector<bool> &ret) {
+    ret[0] = ret[1] = ret[2] = ret[3] = false;
+    if (r1.topLeft.x > r2.topLeft.x + r2.width) {
+        ret[1] = true;
+    }
+    if (r1.topLeft.x + r2.width < r2.topLeft.x) {
+        ret[0] = true;
+    }
+    if (r1.topLeft.y + r1.height < r2.topLeft.y) {
+        ret[2] = true;
+    }
+    if (r1.topLeft.y > r2.topLeft.y + r2.height) {
+        ret[3] = true;
+    }
+}
+
 [[maybe_unused]] static std::ostream& operator<<(std::ostream& os, const Rect& r) {
     os << "R{" << r.topLeft << ", " << r.width << "x" << r.height << "}";
     return os;
