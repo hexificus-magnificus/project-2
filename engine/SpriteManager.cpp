@@ -10,7 +10,7 @@ SpriteID SpriteManager::RegisterTexture(const std::string& texturePath, const Re
     tex = mTextures.at(texturePath);
 
     SpriteID id = mSprites.size();
-    sf::IntRect bounds{{sourceRect.topLeft.x, sourceRect.topLeft.y}, {sourceRect.width, sourceRect.height}};
+    sf::IntRect bounds{{static_cast<int>(sourceRect.topLeft.x), static_cast<int>(sourceRect.topLeft.y)}, {static_cast<int>(sourceRect.width), static_cast<int>(sourceRect.height)}};
     mSprites.emplace_back(sf::Sprite(tex, bounds));
     return id;
 }

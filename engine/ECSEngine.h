@@ -71,14 +71,45 @@ template <typename... Components>
 ECSEngine<Components...>::~ECSEngine() {}
 
 template <typename... Components>
-void ECSEngine<Components...>::Run() {}
+void ECSEngine<Components...>::Run() {
+    while (mWindowManager.GetWindow()->isOpen()) {
+        ProcessEvents();
+
+        if (running || step) {
+            mSystemManager.Run(this);
+            if (step) {
+                step = 0;
+            }
+        }
+
+        if (debug) {
+            DebugDraw();
+        }
+    }
+}
 
 template <typename... Components>
 bool ECSEngine<Components...>::ProcessEvents() {
+    while (const std::optional event = mWindowManager.GetWindow()->pollEvent()) {
+        if (event->is<sf::Event::Closed>()) {
+            mWindowManager.GetWindow()->close();
+        } else if (event->is<sf::Event::Resized>()) {
+            
+        } else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+            int key = static_cast<int>(keyPressed->scancode);
+            if (keyPressed->scancode == sf::Keyboard::Scan::Escape) {
+                debug = !debug;
+            }
+        } else if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+
+        }
+    }
     return true;
 }
 
 template <typename... Components>
-void ECSEngine<Components...>::DebugDraw() {}
-
+void ECSEngine<Components...>::DebugDraw() {
+    mWindowManager.DebugFrameRect(mWindowManager.GetWindowBounds(), 255, 0, 0);
+    mWindowManager.GetWindow()->display();
+}
 }  // namespace ECSEngine
