@@ -154,6 +154,7 @@ int main(int argc, char* argv[]) {
     // Place player
     ECSEngine::EntityID player = engine.GetEntityManager().CreateEntity("player");
     engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(player, {{800.f, 510.f}});
+    engine.GetEntityManager().AddComponent<ECSEngine::RespawnComponent>(player, {{800.f, 510.f}});
     engine.GetEntityManager().AddComponent<ECSEngine::MovementComponent>(player, {{0, 0}});
     engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 2.f}, 0});
     engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0});
