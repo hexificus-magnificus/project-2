@@ -20,6 +20,7 @@ public:
     static constexpr size_t kNullComponent = std::numeric_limits<size_t>::max();
 
     // creates an entity and returns its id
+    // this EntityID is valid during the engine lifetime or until RemoveEntity is called on it
     [[nodiscard]] EntityID CreateEntity(const std::string& name) {
         EntityID id = mEntities.size();
         if (!mFreeEntities.empty()) {
@@ -77,6 +78,7 @@ public:
         size_t storageIdx = mComponentIndices[entity][componentIdx];
         ComponentStorage<T>& storage = GetComponentStorage<T>();
         storage.mValid[storageIdx] = false;
+        storage.mFreeList.push_back(storageIdx);
         mComponentIndices[entity][componentIdx] = kNullComponent;
     }
 
@@ -91,6 +93,7 @@ public:
 
     // get the component T associated with entity
     // behaviour is undefined if entity is invalid or doesn't have a T
+    // returned component is valid during engine lifetime or until RemoveComponent is called
     template <typename T>
     T& GetComponent(EntityID entity) {
         size_t componentIdx = mComponentPack.index<T>;
@@ -100,6 +103,7 @@ public:
     }
 
     // get the storage associated with component T
+    // returned storage is valid for the lifetime of the engine
     template <typename T>
     ComponentStorage<T>& GetComponentStorage() {
         return std::get<ComponentStorage<T>>(mComponents);

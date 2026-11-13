@@ -16,8 +16,10 @@ public:
     SpriteManager() = default;
     ~SpriteManager() = default;
     // creates a sprite using the provided texturePath and sourceRect and returns the associated SpriteID
+    // the SpriteID is valid for the lifetime of the engine
     [[nodiscard]] SpriteID RegisterTexture(const std::string& texturePath, const Rect& sourceRect);
     // returns the sf::Sprite associated with id
+    // this is valid for the lifetime of the engine
     sf::Sprite& GetSprite(SpriteID id);
 
 private:

@@ -11,9 +11,10 @@ public:
     SoundManager() : nullBuffer{}, nullSound{nullBuffer} {};
     ~SoundManager() = default;
     // creates and stores an sf::Sound from soundPath
-    // it can be retrieved later using SoundManager::GetSound(soundName)
+    // it can be retrieved later using SoundManager::GetSound(soundName) during the lifetime of the engine
     void RegisterSound(const std::string& soundPath, const std::string& soundName);
     // returns the sound registered with soundName
+    // this is valid for the lifetime of the engine or until another sound is registered with the same name
     sf::Sound& GetSound(const std::string& soundName);
 
 private:
