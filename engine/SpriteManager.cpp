@@ -3,11 +3,10 @@
 namespace ECSEngine {
 
 SpriteID SpriteManager::RegisterTexture(const std::string& texturePath, const Rect& sourceRect) {
-    sf::Texture tex;
-    if (!mTextures.contains(texturePath)) {
+    if (mTextures.find(texturePath) ==mTextures.end()) {
         mTextures.emplace(texturePath, sf::Texture(texturePath));
     }
-    tex = mTextures.at(texturePath);
+    sf::Texture& tex = mTextures.at(texturePath);
 
     SpriteID id = mSprites.size();
     sf::IntRect bounds{{static_cast<int>(sourceRect.topLeft.x), static_cast<int>(sourceRect.topLeft.y)}, {static_cast<int>(sourceRect.width), static_cast<int>(sourceRect.height)}};

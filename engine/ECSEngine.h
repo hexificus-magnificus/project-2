@@ -62,8 +62,9 @@ private:
     WindowManager mWindowManager;
 
     // For debugging - pause and step the engine
-    bool running, step;
-    int debug;
+    bool running = true; 
+    bool step = false;
+    int debug = 0;
 };
 
 template <typename... Components>
@@ -79,16 +80,18 @@ void ECSEngine<Components...>::Run() {
     while (mWindowManager.GetWindow()->isOpen()) {
         ProcessEvents();
 
+        mWindowManager.GetWindow()->clear();
         if (running || step) {
             mSystemManager.Run(this);
             if (step) {
-                step = 0;
+                step = false;
             }
         }
 
         if (debug) {
             DebugDraw();
         }
+        mWindowManager.GetWindow()->display();
     }
 }
 
@@ -142,12 +145,11 @@ bool ECSEngine<Components...>::ProcessEvents() {
 template <typename... Components>
 void ECSEngine<Components...>::DebugDraw() {
     mWindowManager.DebugFrameRect(mWindowManager.GetWindowBounds(), 255, 0, 0);
-    mWindowManager.GetWindow()->display();
 }
 
 template <typename... Components>
 void ECSEngine<Components...>::PressKey(unsigned int k) {
-    ComponentStorage<InputComponent> storage = mEntityManager.GetComponentStorage<InputComponent>();
+    ComponentStorage<InputComponent>& storage = mEntityManager.GetComponentStorage<InputComponent>();
     for (int i = 0; i < storage.mStorage.size(); i++) {
         if (!storage.mValid[i]) {
             continue;
@@ -158,7 +160,7 @@ void ECSEngine<Components...>::PressKey(unsigned int k) {
 
 template <typename... Components>
 void ECSEngine<Components...>::ReleaseKey(unsigned int k) {
-    ComponentStorage<InputComponent> storage = mEntityManager.GetComponentStorage<InputComponent>();
+    ComponentStorage<InputComponent>& storage = mEntityManager.GetComponentStorage<InputComponent>();
     for (int i = 0; i < storage.mStorage.size(); i++) {
         if (!storage.mValid[i]) {
             continue;

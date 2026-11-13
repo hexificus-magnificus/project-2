@@ -21,7 +21,7 @@
 #include "SpriteManager.h"
 #include "SpriteSystem.h"
 
-std::string gResourcePath = "../assets/";
+std::string gResourcePath = "assets/";
 #define COMPONENTS                                                                             \
     ECSEngine::LocationComponent, ECSEngine::MovementComponent, ECSEngine::CollisionComponent, \
         ECSEngine::SpriteComponent, ECSEngine::SpawnComponent, ECSEngine::CameraComponent,     \
@@ -64,28 +64,38 @@ int main(int argc, char* argv[]) {
     engine.GetSoundManager().RegisterSound(gResourcePath + "sfx_jump.ogg", "jump");
 
     // Load maps
-    LoadMap(engine, gResourcePath, "sky.map");
-    LoadMap(engine, gResourcePath, "world.map");
+    // LoadMap(engine, gResourcePath, "sky.map");
+    // LoadMap(engine, gResourcePath, "world.map");
 
     // Place player
     ECSEngine::EntityID player = engine.GetEntityManager().CreateEntity("player");
     engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(player, {{0, 0}});
     engine.GetEntityManager().AddComponent<ECSEngine::MovementComponent>(player, {{0, 0}});
-    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{25, 0}, 0});
+    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0, 25}, 0});
     engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0});
-    engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, ECSEngine::Rect({0, 0}, 64, 64), ECSEngine::Rect({0, 0}, 64, 64)});
-    ECSEngine::SpriteID playerSprite = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-characters-default.png", ECSEngine::Rect({0, 0}, 64, 64));
-    engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(player, {playerSprite, ECSEngine::Rect({0, 0}, 64, 64), true});
+    engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}});
+    ECSEngine::SpriteID playerSprite = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-characters-default.png", ECSEngine::Rect{{0.f, 0.f}, 128.f, 128.f});
+    engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(player, {playerSprite, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}, true});
     engine.GetEntityManager().AddComponent<ECSEngine::InputComponent>(player, {player});
+    
 
     // Setup score component
-    ECSEngine::ScoreComponent score = engine.GetEntityManager().GetComponent<ECSEngine::ScoreComponent>(player);
-    ECSEngine::Point2D start(0.f, 64.f * 9);
+    ECSEngine::ScoreComponent& score = engine.GetEntityManager().GetComponent<ECSEngine::ScoreComponent>(player);
+    ECSEngine::Point2D start(832.f, 832.f);
     for (int i = 0; i < 10; i++) {
-        ECSEngine::Rect r(start, 64, 64);
+        ECSEngine::Rect r{start, 64, 64};
         r.topLeft = r.topLeft - ECSEngine::Point2D(0.f, i * 64.f);
         score.digitTextureID[i] = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-tiles-default.png", r);
     }
+
+    for (int i = 0; i<3; i++){
+        ECSEngine::EntityID digit = engine.GetEntityManager().CreateEntity("digit");
+        engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(digit, {{10+(i*64), 10}});
+        engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(digit, {score.digitTextureID[0], ECSEngine::Rect{{0.f, 0.f}, 64.f, 64.f}, false});
+        score.digitID[i] = digit;
+
+    }
+    
 
     // Setup Camera
     ECSEngine::EntityID camera = engine.GetEntityManager().CreateEntity("camera");
@@ -96,6 +106,7 @@ int main(int argc, char* argv[]) {
     engine.GetEntityManager().AddComponent<ECSEngine::CameraShake>(camera, {});
 
     // Add all systems
+    
     auto& sm = engine.GetSystemManager();
     sm.AddSystem(std::make_unique<ECSEngine::CollisionLateSystem<COMPONENTS>>());
     sm.AddSystem(std::make_unique<ECSEngine::InputSystem<COMPONENTS>>());
@@ -106,7 +117,7 @@ int main(int argc, char* argv[]) {
     sm.AddSystem(std::make_unique<ECSEngine::CameraSystem<COMPONENTS>>());
     sm.AddSystem(std::make_unique<ECSEngine::SpriteSystem<COMPONENTS>>());
     sm.AddSystem(std::make_unique<ECSEngine::SpawnSystem<COMPONENTS>>());
-
+    
     engine.Run();
     return 0;
 }

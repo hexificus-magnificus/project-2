@@ -70,7 +70,7 @@ public:
     void RemoveComponent(EntityID entity) {
         size_t componentIdx = mComponentPack.index<T>;
         size_t storageIdx = mComponentIndices[entity][componentIdx];
-        ComponentStorage<T> storage = GetComponentStorage<T>();
+        ComponentStorage<T>& storage = GetComponentStorage<T>();
         storage.mValid[storageIdx] = false;
         mComponentIndices[entity][componentIdx] = kNullComponent;
     }

@@ -45,7 +45,7 @@ public:
 			}
             CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(e1.GetID());
 
-            for (auto j = i + 1; i < eManager.mEntities.size(); j++) {
+            for (auto j = i + 1; j < eManager.mEntities.size(); j++) {
                 Entity& e2 = eManager.mEntities[j];
                 if (!eManager.IsValid(e2.GetID())) {
                     continue;
