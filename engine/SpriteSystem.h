@@ -25,7 +25,7 @@ public:
         auto& eManager = engine->GetEntityManager();
         auto& wManager = engine->GetWindowManager();
         for (auto e = eManager.cbegin(); e != eManager.cend(); e++) {
-            if (!eManager.HasComponent<SpriteComponent>(e->GetID())) {
+            if (!eManager.IsValid(e->GetID()) || !eManager.HasComponent<SpriteComponent>(e->GetID())) {
                 continue;
             }
             SpriteComponent spriteC = eManager.GetComponent<SpriteComponent>(e->GetID());
