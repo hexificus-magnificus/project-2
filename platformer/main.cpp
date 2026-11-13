@@ -35,10 +35,16 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
     std::smatch m;
 
     const std::regex dict("dictionary (\\d)");
-    std::getline(map, line);
-    std::regex_match(line, m, dict);
-    int type = std::stoi(m[1].str());
+    if (!map.is_open()) {
+        std::cerr << "Cannot open: " << path + file << std::endl;
+        return;
+    }
 
+    if (!std::getline(map, line) || !std::regex_match(line, m, dict)) {
+        std::cerr << "Invalid map header: " << file << std::endl;
+        return;
+    }
+    int type = std::stoi(m[1].str());
     // get char-tile maps
     // tile line is of the form:
     // [char] [filename] [spritesheet top-left x] [spritesheet top-left y] [spritesheet width] [spritesheet height]
@@ -50,9 +56,11 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
     if (type == 1) {
         tile = std::regex("(.) ([^ ]*) (\\d*) (\\d*) (\\d*) (\\d*)");
     } else {
-        tile = std::regex("(.) ([^ ]*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*)");
+        tile = std::regex("(.) ([^ ]+) (\\d+) (\\d+) (\\d+) (\\d+) (-?\\d+) (-?\\d+) (\\d+) (\\d+)");
     }
     std::getline(map, line);
+    
+
     while (std::regex_match(line, m, tile)) {
         std::string tileChar = m[1].str();
         std::string filename = m[2].str();
@@ -60,24 +68,29 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
         int tly = std::stoi(m[4].str());
         int w = std::stoi(m[5].str());
         int h = std::stoi(m[6].str());
-        ECSEngine::Rect sBounds({tlx, tly}, w, h);
+        ECSEngine::Rect sBounds{{tlx, tly}, static_cast<float>(w), static_cast<float>(h)};
         ECSEngine::SpriteID sId = engine.GetSpriteManager().RegisterTexture(path + filename, sBounds);
-        tiles[tileChar[0]] = {sId, sBounds, true};
+        tiles[tileChar[0]] = {sId, ECSEngine::Rect{{0.f, 0.f}, static_cast<float>(w), static_cast<float>(h)}, true};
 
         if (type == 2) {
             int bbx = std::stoi(m[7].str());
             int bby = std::stoi(m[8].str());
             int bbw = std::stoi(m[9].str());
             int bbh = std::stoi(m[10].str());
-            ECSEngine::Rect bb({bbx, bby}, bbw, bbh);
+            ECSEngine::Rect bb{{bbx, bby}, static_cast<float>(bbw), static_cast<float>(bbh)};
             tileBB[tileChar[0]] = bb;
         }
         std::getline(map, line);
     }
 
     // size is in tiles
-    const std::regex mapDim("map origin (\\d*) (\\d*) tile (\\d*) (\\d*) size (\\d*) (\\d*)");
-    std::regex_match(line, m, mapDim);
+    
+    const std::regex mapDim("map origin (-?\\d+) (-?\\d+) tile (\\d+) (\\d+) size (\\d+) (\\d+)"); //const std::regex mapDim("map origin (\\d*) (\\d*) tile (\\d*) (\\d*) size (\\d*) (\\d*)");
+    if (!std::regex_match(line, m, mapDim)) {
+    std::cout << "Failed to parse map dimensions: [" << line << "]" << std::endl;
+    return;
+}
+    
     int ox = std::stoi(m[1].str());
     int oy = std::stoi(m[2].str());
     int tw = std::stoi(m[3].str());
@@ -86,13 +99,15 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
     int mh = std::stoi(m[6].str());
     ECSEngine::Point2D origin(ox, oy);
     ECSEngine::Point2D tileSize(tw, th);
-    
     std::getline(map, line);
     for (int row = 0; row < mh; row++) {
         for (int col = 0; col < mw; col++) {
             char cTile = line[col];
-            ECSEngine::EntityID eTile = engine.GetEntityManager().CreateEntity("tile " + cTile);
-            ECSEngine::Point2D pos = origin + tileSize * ECSEngine::Point2D{row, col};
+            if (tiles.find(cTile)==tiles.end()){
+                continue;
+            }
+            ECSEngine::EntityID eTile = engine.GetEntityManager().CreateEntity(std::string("tile ") + cTile);
+            ECSEngine::Point2D pos(origin.x+col*tileSize.x, origin.y+row*tileSize.y); //= origin + tileSize * ECSEngine::Point2D{row, col};
             engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(eTile, {pos});
             engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(eTile, tiles[cTile]);
 
@@ -116,6 +131,7 @@ int main(int argc, char* argv[]) {
     // Engine test code
     Engine engine(1024, 768, "Test Engine");
     engine.GetWindowManager().GetWindow()->setFramerateLimit(60);
+    engine.GetWindowManager().SetWorldCenter({0.f, 384.f});
 
     // Load sounds
     engine.GetSoundManager().RegisterSound(gResourcePath + "footstep_grass_003.ogg", "land");
@@ -124,14 +140,14 @@ int main(int argc, char* argv[]) {
     engine.GetSoundManager().RegisterSound(gResourcePath + "sfx_jump.ogg", "jump");
 
     // Load maps
-    // LoadMap(engine, gResourcePath, "sky.map");
-    // LoadMap(engine, gResourcePath, "world.map");
+    LoadMap(engine, gResourcePath, "sky.map");
+    LoadMap(engine, gResourcePath, "world.map");
 
     // Place player
     ECSEngine::EntityID player = engine.GetEntityManager().CreateEntity("player");
-    engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(player, {{0, 0}});
+    engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(player, {{800.f, 510.f}});
     engine.GetEntityManager().AddComponent<ECSEngine::MovementComponent>(player, {{0, 0}});
-    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 0.01f}, 0});
+    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 0.1f}, 0});
     engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0});
     engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}});
     ECSEngine::SpriteID playerSprite = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-characters-default.png", ECSEngine::Rect{{0.f, 0.f}, 128.f, 128.f});

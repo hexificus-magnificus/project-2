@@ -16,7 +16,7 @@ public:
     }
 
     tSystemReturn Run(EngineView<Components...>* engine) override {
-        EntityManager<Components...> eManager = engine->GetEntityManager();
+        auto& eManager = engine->GetEntityManager();
         /*
         for (int i = 0; i < eManager.mEntities.size(); i++) {
             Entity e1 = eManager.mEntities[i];
@@ -56,7 +56,12 @@ public:
                 CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(e2.GetID());
                 
                 std::vector<bool> overlaps{false, false, false, false};
-                RectOverlap(c1.collisionBox, c2.collisionBox, overlaps);
+                Rect box1 = c1.collisionBox;
+                Rect box2 = c2.collisionBox;
+                box1.topLeft = box1.topLeft+ eManager.GetComponent<LocationComponent>(e1.GetID()).loc;
+                box2.topLeft = box2.topLeft+ eManager.GetComponent<LocationComponent>(e2.GetID()).loc;
+                RectOverlap(box1, box2, overlaps);
+
                 if (!(overlaps[0] || overlaps[1] || overlaps[2] || overlaps[3])) {
                     // collision
                     if (c1.staticEntity) {
@@ -126,25 +131,43 @@ private:
     // will push the dynamic entity out of the static one based on
     // the previous frame's bounding boxes
     void StaticDynamicCollide(Entity staticO, Entity dynamic, EngineView<Components...>* engine) {
-        EntityManager<Components...> eManager = engine->GetEntityManager();
+        auto& eManager = engine->GetEntityManager();
         CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(staticO.GetID());
         CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(dynamic.GetID());
 
         std::vector<bool> oldOverlaps{false, false, false, false};
-        RectOverlap(c1.previousCollisionBox, c2.previousCollisionBox, oldOverlaps);
+        Rect box1 = c1.previousCollisionBox;
+        Rect box2 = c2.previousCollisionBox;
+        // box1.topLeft = box1.topLeft + eManager.GetComponent<LocationComponent>(staticO.GetID()).loc;
+        // box2.topLeft = box2.topLeft + eManager.GetComponent<LocationComponent>(dynamic.GetID()).loc;
+        RectOverlap(box1, box2, oldOverlaps);
+
+        Rect staticBox = c1.collisionBox;
+        Rect dynamicBox = c2.collisionBox;
+
+        staticBox.topLeft = staticBox.topLeft +
+            eManager.GetComponent<LocationComponent>(staticO.GetID()).loc;
+
+        dynamicBox.topLeft = dynamicBox.topLeft +
+            eManager.GetComponent<LocationComponent>(dynamic.GetID()).loc;
+
         if (oldOverlaps[2]) {
             c2.onCeiling = 1;
-            float diff = c2.collisionBox.topLeft.y - (c1.collisionBox.topLeft.y + c1.collisionBox.height);
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            //float diff = c2.collisionBox.topLeft.y - (c1.collisionBox.topLeft.y + c1.collisionBox.height);
+            float diff = dynamicBox.topLeft.y- (staticBox.topLeft.y + staticBox.height);
+            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff - 1);
         } else if (oldOverlaps[3]) {
             if (!c2.onGround) {
                 // just landed
                 engine->GetSoundManager().GetSound("land").play();
             }
+            MovementComponent& m2 = eManager.GetComponent<MovementComponent>(dynamic.GetID());
+            m2.velocity.y = 0;
             c2.onGround = 1;
-            float diff = c2.collisionBox.topLeft.y + c2.collisionBox.height - c1.collisionBox.topLeft.y;
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+
+            float diff = dynamicBox.topLeft.y + dynamicBox.height- staticBox.topLeft.y;
+            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff + 1);
         }
         if (oldOverlaps[0]) {
@@ -154,7 +177,7 @@ private:
             }
             c2.onRightWall = 1;
             float diff = c2.collisionBox.topLeft.x + c2.collisionBox.width - c1.collisionBox.topLeft.x;
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff + 1, 0.f};
         } else if (oldOverlaps[1]) {
             if (!c2.onLeftWall) {
@@ -162,7 +185,7 @@ private:
             }
             c2.onLeftWall = 1;
             float diff = c2.collisionBox.topLeft.x - (c1.collisionBox.topLeft.x + c1.collisionBox.width);
-            LocationComponent l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff - 1, 0.f};
         }
     }
@@ -191,7 +214,7 @@ private:
         if (r1.topLeft.x > r2.topLeft.x + r2.width) {
             ret[1] = true;
         }
-        if (r1.topLeft.x + r2.width < r2.topLeft.x) {
+        if (r1.topLeft.x + r1.width < r2.topLeft.x) {
             ret[0] = true;
         }
         if (r1.topLeft.y + r1.height < r2.topLeft.y) {
