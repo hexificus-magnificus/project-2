@@ -17,7 +17,6 @@ public:
 
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& eManager = engine->GetEntityManager();
-        /*
         for (int i = 0; i < eManager.mEntities.size(); i++) {
             Entity e1 = eManager.mEntities[i];
             if (!eManager.IsValid(e1.GetID())) {
@@ -33,7 +32,6 @@ public:
             c1.onLeftWall = 0;
             c1.onRightWall = 0;
         }
-        */
 
 		for (int i = 0; i < eManager.mEntities.size(); i++) {
             Entity& e1 = eManager.mEntities[i];
@@ -170,6 +168,18 @@ private:
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff + 1);
         }
+
+        // if no longer overlapping, end
+        std::vector<bool> overlaps{false, false, false, false};
+        Rect nbox1 = c1.collisionBox;
+        Rect nbox2 = c2.collisionBox;
+        nbox1.topLeft = nbox1.topLeft+ eManager.GetComponent<LocationComponent>(staticO.GetID()).loc;
+        nbox2.topLeft = nbox2.topLeft+ eManager.GetComponent<LocationComponent>(dynamic.GetID()).loc;
+        RectOverlap(nbox1, nbox2, overlaps);
+        if (overlaps[0] || overlaps[1] || overlaps[2] || overlaps[3]) {
+            return;
+        }
+
         if (oldOverlaps[1]) {
             if (!c2.onRightWall) {
                 // just hit wall

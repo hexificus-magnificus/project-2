@@ -147,11 +147,11 @@ int main(int argc, char* argv[]) {
     ECSEngine::EntityID player = engine.GetEntityManager().CreateEntity("player");
     engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(player, {{800.f, 510.f}});
     engine.GetEntityManager().AddComponent<ECSEngine::MovementComponent>(player, {{0, 0}});
-    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 0.1f}, 0});
+    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 2.f}, 0});
     engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0});
-    engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}});
+    engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(34.f, 32.f), 62.f, 96.f}, ECSEngine::Rect{ECSEngine::Point2D(32.f, 32.f), 64.f, 96.f}});
     ECSEngine::SpriteID playerSprite = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-characters-default.png", ECSEngine::Rect{{0.f, 0.f}, 128.f, 128.f});
-    engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(player, {playerSprite, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}, true});
+    engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(player, {playerSprite, ECSEngine::Rect{ECSEngine::Point2D(32.f, 32.f), 64.f, 64.f}, true});
     engine.GetEntityManager().AddComponent<ECSEngine::InputComponent>(player, {player});
     
 
