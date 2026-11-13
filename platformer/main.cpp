@@ -193,7 +193,6 @@ int main(int argc, char* argv[]) {
     ECSEngine::Rect softRect{{width*0.3f, 0.f}, width*0.4f, height};
     engine.GetEntityManager().AddComponent<ECSEngine::CameraComponent>(camera, {{playerPos.x, playerPos.y - 128}, 1, hardRect, softRect, 0.1f});
     engine.GetEntityManager().AddComponent<ECSEngine::CameraFollower>(camera, {player});
-    engine.GetEntityManager().AddComponent<ECSEngine::CameraShake>(camera, {});
 
     // Add all systems
     
