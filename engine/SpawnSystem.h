@@ -38,8 +38,19 @@ public:
 
             EntityID spawnedID = entityManager.CreateEntity(spawn.spawnType);
 
+            MovementComponent movement;
+            int randVelocityx = (rand() % 51) - 25; //https://stackoverflow.com/a/12657984
+            int randVelocityy = (rand() % 31) - 10; 
+            movement.velocity = Point2D(randVelocityx, randVelocityy);
+            entityManager.AddComponent<MovementComponent>(spawnedID, movement);
+
             LocationComponent location;
             location.loc = spawnLocation.loc;
+            if (entityManager.HasComponent<CollisionComponent>(spawnerID)) {
+                int velXDir = abs(randVelocityx) / randVelocityx;
+                float bboxWidth = entityManager.GetComponent<CollisionComponent>(spawnerID).collisionBox.width;
+                location.loc = location.loc + Point2D{bboxWidth * velXDir, 0.f};
+            }
             entityManager.AddComponent<LocationComponent>(spawnedID, location);
 
             SpriteComponent spriteComponent;
@@ -51,13 +62,6 @@ public:
             spriteComponent.bounds.width = bounds.size.x;
             spriteComponent.bounds.height = bounds.size.y;
             entityManager.AddComponent<SpriteComponent>(spawnedID, spriteComponent);
-
-
-            MovementComponent movement;
-            int randVelocityx = (rand() % 201) - 100; //https://stackoverflow.com/a/12657984
-            int randVelocityy = (rand() % 201) - 100; 
-            movement.velocity = Point2D(randVelocityx, randVelocityy);
-            entityManager.AddComponent<MovementComponent>(spawnedID, movement);
 
             CollisionComponent collision{}; //initializes collision flags to 0 ChatGPT (may change)
             collision.staticEntity = false;
