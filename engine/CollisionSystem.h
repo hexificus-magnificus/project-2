@@ -83,23 +83,31 @@ public:
                                         eManager.GetComponent<ScoreComponent>(e1.GetID()).score += 1;
                                     }
                                 }
-                                if (c2.onGround && !c2.prevOnGround) {
-                                    eManager.GetComponent<CameraShake>(e2.GetID()).offset.y = screenShake;
+                                if (c2.onGround) {
+                                    MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
+                                    m2.velocity.y = 0;
+                                    if (!c2.prevOnGround) {
+                                        eManager.GetComponent<CameraShake>(e2.GetID()).offset.y = screenShake;
+                                        engine->GetSoundManager().GetSound("land").play();
+                                    }
+                                    
                                 }
                                 if (c2.onLeftWall && !c2.prevOnLeftWall) {
                                     eManager.GetComponent<CameraShake>(e2.GetID()).offset.x = -screenShake;
+                                    engine->GetSoundManager().GetSound("wall").play();
                                 }
                                 if (c2.onRightWall && !c2.prevOnRightWall) {
                                     eManager.GetComponent<CameraShake>(e2.GetID()).offset.x = screenShake;
+                                    engine->GetSoundManager().GetSound("wall").play();
                                 }
                             } else {
                                 // not the player, bounce
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
                                 if (c2.onGround && !c2.prevOnGround) {
-                                    m2.velocity = m2.velocity + Point2D{0.f, -15.f};
+                                    m2.velocity = m2.velocity * Point2D{1.f, -0.6f};
                                 }
                                 if ((c2.onLeftWall && !c2.prevOnLeftWall) || (c2.onRightWall && !c2.prevOnRightWall)) {
-                                    m2.velocity = m2.velocity * Point2D{-0.9f, 1.f};
+                                    m2.velocity = m2.velocity * Point2D{-0.6f, 1.f};
                                 }
                             }
                         }
@@ -114,23 +122,31 @@ public:
                                         eManager.GetComponent<ScoreComponent>(e2.GetID()).score += 1;
                                     }
                                 }
-                                if (c1.onGround && !c1.prevOnGround) {
-                                    eManager.GetComponent<CameraShake>(e1.GetID()).offset.y = screenShake;
+                                if (c1.onGround) {
+                                    MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
+                                    m1.velocity.y = 0;
+                                    if (!c1.prevOnGround) {
+                                        eManager.GetComponent<CameraShake>(e1.GetID()).offset.y = screenShake;
+                                        engine->GetSoundManager().GetSound("land").play();
+                                    }
                                 }
                                 if (c1.onLeftWall && !c1.prevOnLeftWall) {
                                     eManager.GetComponent<CameraShake>(e1.GetID()).offset.x = -screenShake;
+                                    engine->GetSoundManager().GetSound("wall").play();
                                 }
                                 if (c1.onRightWall && !c1.prevOnRightWall) {
                                     eManager.GetComponent<CameraShake>(e1.GetID()).offset.x = screenShake;
+                                    engine->GetSoundManager().GetSound("wall").play();
                                 }
                             } else {
                                 // not the player, bounce
                                 MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
                                 if (c1.onGround && !c1.prevOnGround) {
-                                    m1.velocity = m1.velocity + Point2D{0.f, -15.f};
+                                    std::cout << m1.velocity << "\n";
+                                    m1.velocity = m1.velocity * Point2D{1.f, -0.6f};
                                 }
                                 if ((c1.onLeftWall && !c1.prevOnLeftWall) || (c1.onRightWall && !c1.prevOnRightWall)) {
-                                    m1.velocity = m1.velocity * Point2D{-0.9f, 1.f};
+                                    m1.velocity = m1.velocity * Point2D{-0.6f, 1.f};
                                 }
                             }
                         } else {
@@ -149,9 +165,15 @@ public:
                                 // 2 stars - bounce
                                 MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
-                                Point2D dirMul{-1, -1};
-                                m1.velocity = 0.9f * m1.velocity * dirMul;
-                                m2.velocity = 0.9f * m2.velocity * dirMul;
+                                LocationComponent& l1 = eManager.GetComponent<LocationComponent>(e1.GetID());
+                                LocationComponent& l2 = eManager.GetComponent<LocationComponent>(e2.GetID());
+                                Point2D dirMul{-0.6f, -0.6f};
+                                Point2D onSurface1{(1 - c1.onLeftWall) * (1 - c1.onRightWall), 1 - c1.onGround};
+                                Point2D onSurface2{(1 - c2.onLeftWall) * (1 - c2.onRightWall), 1 - c2.onGround};
+                                m1.velocity = m1.velocity * dirMul;
+                                m2.velocity = m2.velocity * dirMul;
+                                l1.loc = l1.loc + m1.velocity * onSurface1;
+                                l2.loc = l2.loc + m2.velocity * onSurface2;
                             }
                         }
                     }
@@ -193,14 +215,7 @@ private:
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff - 1);
         } else if (oldOverlaps[3]) {
-            if (!c2.onGround &&!c2.prevOnGround) {
-                // just landed
-                engine->GetSoundManager().GetSound("land").play();
-            }
-            MovementComponent& m2 = eManager.GetComponent<MovementComponent>(dynamic.GetID());
-            m2.velocity.y = 0;
             c2.onGround = 1;
-
             float diff = dynamicBox.topLeft.y + dynamicBox.height- staticBox.topLeft.y;
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff + 1);
@@ -218,19 +233,11 @@ private:
         }
 
         else if (oldOverlaps[1]) {
-            if (!c2.onRightWall && !c2.prevOnRightWall) {
-                // just hit wall
-                engine->GetSoundManager().GetSound("wall").play();
-            }
             c2.onRightWall = 1;
             float diff = dynamicBox.topLeft.x + dynamicBox.width - staticBox.topLeft.x;
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff + 1, 0.f};
         } else if (oldOverlaps[0]) {
-            if (!c2.onLeftWall && !c2.prevOnLeftWall) {
-                // just hit wall
-                engine->GetSoundManager().GetSound("wall").play();
-            }
             c2.onLeftWall = 1;
             float diff = dynamicBox.topLeft.x - (staticBox.topLeft.x + staticBox.width);
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
