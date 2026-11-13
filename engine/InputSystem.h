@@ -14,7 +14,6 @@ const int kDashInterval = 25;
 const float kWallFallingSpeed = 5;
 const float kDownFallingAcceleration = 3;
 
-
 template <typename... Components>
 class InputSystem : public System<Components...> {
 public:
@@ -71,15 +70,15 @@ public:
 
                     //jumping
                     if (input.keydown.test(Key::Z)&&!input.lastKeydown.test(Key::Z)){
-                        if (collisionPlayer.onGround){
-                            movement.velocity.y = -kJumpVelocity;
-                        }
-                        else if (collisionPlayer.onLeftWall){
+                        
+                        if (collisionPlayer.onLeftWall){
                             movement.velocity.y = -kJumpVelocity;
                             movement.velocity.x = kMaxRunVelocity;
                         }else if (collisionPlayer.onRightWall){
                             movement.velocity.y = -kJumpVelocity;
                             movement.velocity.x = -kMaxRunVelocity;
+                        }else if (collisionPlayer.onGround){
+                            movement.velocity.y = -kJumpVelocity;
                         }
                     }else if (!input.keydown.test(Key::Z)&&input.lastKeydown.test(Key::Z)&&movement.velocity.y <0){
                         movement.velocity.y = movement.velocity.y/2;

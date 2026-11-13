@@ -52,6 +52,9 @@ public:
                     continue;
                 }
                 CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(e2.GetID());
+                if (c1.staticEntity && c2.staticEntity) {
+                    continue;
+                }
                 
                 std::vector<bool> overlaps{false, false, false, false};
                 Rect box1 = c1.collisionBox;
@@ -180,7 +183,7 @@ private:
             return;
         }
 
-        if (oldOverlaps[1]) {
+        else if (oldOverlaps[1]) {
             if (!c2.onRightWall) {
                 // just hit wall
                 engine->GetSoundManager().GetSound("wall").play();
