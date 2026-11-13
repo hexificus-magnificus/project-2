@@ -5,7 +5,7 @@
 
 namespace ECSEngine {
 
-const float kMaxRunVelocity = 15;
+const float kMaxRunVelocity = 10;
 const float kDashVelocity = 50;
 const float kJumpVelocity = 25;
 const float kGroundRunAcceleration = 5;
@@ -48,9 +48,13 @@ public:
 
                     //horizontal movement
                     if (input.keydown.test(Key::Right)){
-                        movement.velocity.x  = std::min(kMaxRunVelocity, movement.velocity.x+acceleration);
+                        if (movement.velocity.x + acceleration <= kMaxRunVelocity) {
+                            movement.velocity.x += acceleration;
+                        }
                     }else if (input.keydown.test(Key::Left)){
-                        movement.velocity.x = std::max(-kMaxRunVelocity, movement.velocity.x-acceleration);
+                        if (movement.velocity.x - acceleration >= -kMaxRunVelocity) {
+                            movement.velocity.x -= acceleration;
+                        }
                     }else{
                         if (movement.velocity.x <0){
                             movement.velocity.x = std::min(acceleration+movement.velocity.x, 0.0f);
