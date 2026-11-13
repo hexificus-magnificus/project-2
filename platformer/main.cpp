@@ -87,9 +87,9 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
     
     const std::regex mapDim("map origin (-?\\d+) (-?\\d+) tile (\\d+) (\\d+) size (\\d+) (\\d+)"); //const std::regex mapDim("map origin (\\d*) (\\d*) tile (\\d*) (\\d*) size (\\d*) (\\d*)");
     if (!std::regex_match(line, m, mapDim)) {
-    std::cout << "Failed to parse map dimensions: [" << line << "]" << std::endl;
-    return;
-}
+        std::cout << "Failed to parse map dimensions: [" << line << "]" << std::endl;
+        return;
+    }
     
     int ox = std::stoi(m[1].str());
     int oy = std::stoi(m[2].str());
@@ -99,6 +99,8 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
     int mh = std::stoi(m[6].str());
     ECSEngine::Point2D origin(ox, oy);
     ECSEngine::Point2D tileSize(tw, th);
+    ECSEngine::SpriteID star = engine.GetSpriteManager().RegisterTexture(path + "spritesheet-tiles-default.png", {{640.f, 320.f}, 64.f, 64.f});
+
     std::getline(map, line);
     for (int row = 0; row < mh; row++) {
         for (int col = 0; col < mw; col++) {
@@ -112,8 +114,14 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
             engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(eTile, tiles[cTile]);
 
             if (type == 2) {
-                ECSEngine::CollisionComponent coll{1, 0, 0, 0, 0, 0, tileBB[cTile], tileBB[cTile]};
+                uint8_t dmg = cTile == 'x' ? 1 : 0;
+                ECSEngine::CollisionComponent coll{1, dmg, 0, 0, 0, 0, tileBB[cTile], tileBB[cTile]};
                 engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(eTile, coll);
+            }
+            if (cTile == 'S') {
+                // this is a spawner
+                ECSEngine::SpawnComponent sp{eTile, "what does this even do", star, 120, 60, 10};
+                engine.GetEntityManager().AddComponent<ECSEngine::SpawnComponent>(eTile, sp);
             }
         }
 
