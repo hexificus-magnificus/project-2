@@ -59,6 +59,10 @@ public:
                         }    
                     }
 
+                    if (input.keydown.test(Key::Down)) {
+                        movement.velocity.y += kDownFallingAcceleration;
+                    }
+
                     if (input.keydown.test(Key::C) &&!input.lastKeydown.test(Key::C)&&input.lastDash==0&&movement.velocity.x!=0){
                         if (movement.velocity.x<0){
                             movement.velocity.x = -kDashVelocity;
@@ -66,6 +70,10 @@ public:
                             movement.velocity.x = kDashVelocity;
                         }
                         input.lastDash=kDashInterval;
+                        if (entityManager.HasComponent<GravityComponent>(player)) {
+                            entityManager.GetComponent<GravityComponent>(player).disabledTimer = 20;
+                            movement.velocity.y = 0;
+                        }
                     }
 
                     //jumping
