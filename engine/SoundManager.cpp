@@ -3,14 +3,14 @@
 namespace ECSEngine {
 
 void SoundManager::RegisterSound(const std::string& soundPath, const std::string& soundName) {
-    sf::SoundBuffer buffer{soundPath};
-    sf::Sound sound{buffer};
-    mSounds.emplace(soundName, sound);
+    mSoundBuffers.emplace(soundName, soundPath);
+    sf::Sound sound{mSoundBuffers.at(soundName)};
+    mSoundObjects.emplace(soundName, sound);
 }
 
 sf::Sound& SoundManager::GetSound(const std::string& soundName) {
-    if (mSounds.contains(soundName)) {
-        return mSounds.at(soundName);
+    if (mSoundObjects.contains(soundName)) {
+        return mSoundObjects.at(soundName);
     } else {
         return nullSound;
     }

@@ -11,7 +11,7 @@ const float kJumpVelocity = 25;
 const float kGroundRunAcceleration = 5;
 const float kAirRunAcceleration = 4;
 const int kDashInterval = 25;
-const float kWallFallingSpeed = 5;
+const float kWallFallingSpeed = 3;
 const float kDownFallingAcceleration = 3;
 
 template <typename... Components>

@@ -25,6 +25,11 @@ public:
 			}
             CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(e1.GetID());
 
+            c1.prevOnGround = c1.onGround;
+            c1.prevOnCeiling = c1.onCeiling;
+            c1.prevOnLeftWall = c1.onLeftWall;
+            c1.prevOnRightWall = c1.onRightWall;
+
             c1.onCeiling = 0;
             c1.onGround = 0;
             c1.onLeftWall = 0;
@@ -168,7 +173,7 @@ private:
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff - 1);
         } else if (oldOverlaps[3]) {
-            if (!c2.onGround) {
+            if (!c2.onGround &&!c2.prevOnGround) {
                 // just landed
                 engine->GetSoundManager().GetSound("land").play();
             }
@@ -193,7 +198,7 @@ private:
         }
 
         else if (oldOverlaps[1]) {
-            if (!c2.onRightWall) {
+            if (!c2.onRightWall && !c2.prevOnRightWall) {
                 // just hit wall
                 engine->GetSoundManager().GetSound("wall").play();
             }
@@ -202,7 +207,7 @@ private:
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff + 1, 0.f};
         } else if (oldOverlaps[0]) {
-            if (!c2.onLeftWall) {
+            if (!c2.onLeftWall && !c2.prevOnLeftWall) {
                 // just hit wall
                 engine->GetSoundManager().GetSound("wall").play();
             }
