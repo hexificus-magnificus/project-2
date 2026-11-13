@@ -115,7 +115,7 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
 
             if (type == 2) {
                 uint8_t dmg = cTile == 'x' ? 1 : 0;
-                ECSEngine::CollisionComponent coll{1, dmg, 0, 0, 0, 0, tileBB[cTile], tileBB[cTile]};
+                ECSEngine::CollisionComponent coll{1, dmg, 0, 0, 0, 0, 0, 0, 0, 0, tileBB[cTile], tileBB[cTile]};
                 engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(eTile, coll);
             }
             if (cTile == 'S') {
@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
     engine.GetEntityManager().AddComponent<ECSEngine::MovementComponent>(player, {{0, 0}});
     engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 2.f}, 0});
     engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0});
-    engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(34.f, 32.f), 62.f, 96.f}, ECSEngine::Rect{ECSEngine::Point2D(32.f, 32.f), 64.f, 96.f}});
+    engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(34.f, 32.f), 62.f, 96.f}, ECSEngine::Rect{ECSEngine::Point2D(32.f, 32.f), 64.f, 96.f}});
     ECSEngine::SpriteID playerSprite = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-characters-default.png", ECSEngine::Rect{{0.f, 0.f}, 128.f, 128.f});
     engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(player, {playerSprite, ECSEngine::Rect{ECSEngine::Point2D(32.f, 32.f), 64.f, 64.f}, true});
     engine.GetEntityManager().AddComponent<ECSEngine::InputComponent>(player, {player});

@@ -8,8 +8,6 @@ namespace ECSEngine {
 template <typename... Components>
 class CollisionSystem : public System<Components...> {
 public:
-    CollisionSystem() : starBounceHeight(-1) {}
-
     const std::string& GetName() const override {
         static std::string name("CollisionSystem");
         return name;
@@ -81,7 +79,12 @@ public:
                             } else {
                                 // not the player, bounce
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
-                                m2.velocity = {m2.velocity.x * -0.9f, starBounceHeight};
+                                if (c2.onGround && !c2.prevOnGround) {
+                                    m2.velocity = m2.velocity + Point2D{0.f, -15.f};
+                                }
+                                if ((c2.onLeftWall && !c2.prevOnLeftWall) || (c2.onRightWall && !c2.prevOnRightWall)) {
+                                    m2.velocity = m2.velocity * Point2D{-0.9f, 1.f};
+                                }
                             }
                         }
                     } else {
@@ -98,7 +101,12 @@ public:
                             } else {
                                 // not the player, bounce
                                 MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
-                                m1.velocity = {m1.velocity.x * -0.9f, starBounceHeight};
+                                if (c1.onGround && !c1.prevOnGround) {
+                                    m1.velocity = m1.velocity + Point2D{0.f, -15.f};
+                                }
+                                if ((c1.onLeftWall && !c1.prevOnLeftWall) || (c1.onRightWall && !c1.prevOnRightWall)) {
+                                    m1.velocity = m1.velocity * Point2D{-0.9f, 1.f};
+                                }
                             }
                         } else {
                             // both dynamic
@@ -116,8 +124,9 @@ public:
                                 // 2 stars - bounce
                                 MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
-                                m1.velocity = {m1.velocity.x * -0.9f, starBounceHeight};
-                                m2.velocity = {m2.velocity.x * -0.9f, starBounceHeight};
+                                Point2D dirMul{-1, -1};
+                                m1.velocity = 0.9f * m1.velocity * dirMul;
+                                m2.velocity = 0.9f * m2.velocity * dirMul;
                             }
                         }
                     }
@@ -238,8 +247,6 @@ private:
             ret[3] = true;
         }
     }
-
-    float starBounceHeight;
 };
 
 }  // namespace ECSEngine

@@ -47,11 +47,14 @@ public:
             LocationComponent location;
             location.loc = spawnLocation.loc;
             if (entityManager.HasComponent<CollisionComponent>(spawnerID)) {
-                int velXDir = abs(randVelocityx) / randVelocityx;
+                int velXDir = randVelocityx >= 0 ? 1 : -1;
                 float bboxWidth = entityManager.GetComponent<CollisionComponent>(spawnerID).collisionBox.width;
                 location.loc = location.loc + Point2D{bboxWidth * velXDir, 0.f};
             }
             entityManager.AddComponent<LocationComponent>(spawnedID, location);
+
+            GravityComponent grav{{0.f, 2.f}, 0};
+            entityManager.AddComponent<GravityComponent>(spawnedID, grav);
 
             SpriteComponent spriteComponent;
             spriteComponent.textureID = spawn.spawnTextureID;

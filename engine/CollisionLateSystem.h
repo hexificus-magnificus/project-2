@@ -18,9 +18,16 @@ public:
 			}
             CollisionComponent& c = eManager.GetComponent<CollisionComponent>(e->GetID());
             c.previousCollisionBox = c.collisionBox;
-
             auto& location = eManager.GetComponent<LocationComponent>(e->GetID());
-            c.previousCollisionBox.topLeft =c.previousCollisionBox.topLeft + location.loc;
+            c.previousCollisionBox.topLeft = c.previousCollisionBox.topLeft + location.loc;
+
+            if (c.staticEntity) {
+                continue;
+            }
+            c.prevOnCeiling = c.onCeiling;
+            c.prevOnGround = c.onGround;
+            c.prevOnLeftWall = c.onLeftWall;
+            c.prevOnRightWall = c.onRightWall;
         }
 
         return kContinue;

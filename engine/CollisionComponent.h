@@ -16,6 +16,10 @@ struct CollisionComponent {
     uint8_t onCeiling : 1;
     uint8_t onLeftWall : 1;
     uint8_t onRightWall : 1;
+    uint8_t prevOnGround : 1;
+    uint8_t prevOnCeiling : 1;
+    uint8_t prevOnLeftWall : 1;
+    uint8_t prevOnRightWall : 1;
     Rect collisionBox;          // The bounding box for collision detection
     Rect previousCollisionBox;  // The previous bounding box for collision detection
 };
