@@ -169,9 +169,9 @@ private:
 
     void Damage(Entity e, EntityManager<Components...>& eManager) {
         if (eManager.template HasComponent<RespawnComponent>(e.GetID())) {
-            RespawnComponent r = eManager.GetComponent<RespawnComponent>(e.GetID());
-            LocationComponent& l = eManager.GetComponent<LocationComponent>(e.GetID());
-            MovementComponent& m = eManager.GetComponent<MovementComponent>(e.GetID());
+            RespawnComponent r = eManager.template GetComponent<RespawnComponent>(e.GetID());
+            LocationComponent& l = eManager.template GetComponent<LocationComponent>(e.GetID());
+            MovementComponent& m = eManager.template GetComponent<MovementComponent>(e.GetID());
 
             l.loc = r.loc;
             m.velocity = {0, 0};
