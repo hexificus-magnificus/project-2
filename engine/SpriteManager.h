@@ -15,7 +15,9 @@ class SpriteManager {
 public:
     SpriteManager() = default;
     ~SpriteManager() = default;
+    // creates a sprite using the provided texturePath and sourceRect and returns the associated SpriteID
     [[nodiscard]] SpriteID RegisterTexture(const std::string& texturePath, const Rect& sourceRect);
+    // returns the sf::Sprite associated with id
     sf::Sprite& GetSprite(SpriteID id);
 
 private:

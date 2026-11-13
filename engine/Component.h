@@ -5,7 +5,7 @@ namespace ECSEngine {
 template <typename T>
 class ComponentStorage {
 public:
-    std::vector<T> mStorage;
+    std::vector<T> mStorage;        // stores the components themselves. components are not guaranteed to be valid
     std::vector<bool> mValid;       // Quickly track if a component is valid
     std::vector<size_t> mFreeList;  // Avoid scanning for free slots
 };

@@ -18,6 +18,8 @@ public:
     EntityManager() {}
 
     static constexpr size_t kNullComponent = std::numeric_limits<size_t>::max();
+
+    // creates an entity and returns its id
     [[nodiscard]] EntityID CreateEntity(const std::string& name) {
         EntityID id = mEntities.size();
         if (!mFreeEntities.empty()) {
@@ -43,6 +45,8 @@ public:
         mFreeEntities.push_back(entity);
     }
 
+    // adds a component T to entity by copy
+    // behaviour is undefined if entity is invalid or has a T already
     template <typename T>
     void AddComponent(EntityID entity, T component) {
         size_t componentIdx = mComponentPack.index<T>;
@@ -62,10 +66,11 @@ public:
             storage.mValid.push_back(true);
         }
         
-
         mComponentIndices[entity][componentIdx] = storageIdx;
     }
 
+    // invalidates the component T associated with entity
+    // behaviour is undefined if entity is invalid or doesn't have a T
     template <typename T>
     void RemoveComponent(EntityID entity) {
         size_t componentIdx = mComponentPack.index<T>;
@@ -75,6 +80,8 @@ public:
         mComponentIndices[entity][componentIdx] = kNullComponent;
     }
 
+    // returns true if entity has a component T associated with it, false otherwise
+    // behaviour is undefined if entity is invalid
     template <typename T>
     bool HasComponent(EntityID entity) const {
         size_t componentIdx = mComponentPack.index<T>;
@@ -82,6 +89,8 @@ public:
         return storageIdx != kNullComponent;
     }
 
+    // get the component T associated with entity
+    // behaviour is undefined if entity is invalid or doesn't have a T
     template <typename T>
     T& GetComponent(EntityID entity) {
         size_t componentIdx = mComponentPack.index<T>;
@@ -90,16 +99,18 @@ public:
         return storage.mStorage[storageIdx];
     }
 
+    // get the storage associated with component T
     template <typename T>
     ComponentStorage<T>& GetComponentStorage() {
         return std::get<ComponentStorage<T>>(mComponents);
     }
 
+    // returns true if an entity is valid, false otherwise
     bool IsValid(EntityID entity) const {
         return mEntitiesValid[entity];
     }
 
-    std::vector<Entity> mEntities;
+    std::vector<Entity> mEntities;                                  // not all entities in this vector are guaranteed to be valid.
     using const_iterator = std::vector<Entity>::const_iterator;
     const_iterator cbegin() const { return mEntities.cbegin(); }
     const_iterator cend() const { return mEntities.cend(); }
