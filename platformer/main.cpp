@@ -39,11 +39,70 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
     std::regex_match(line, m, dict);
     int type = std::stoi(m[1].str());
 
-    std::unordered_map<std::string, ECSEngine::SpriteComponent> tiles;
+    // get char-tile maps
+    // tile line is of the form:
+    // [char] [filename] [spritesheet top-left x] [spritesheet top-left y] [spritesheet width] [spritesheet height]
+    // if dict type is 2, then also has
+    // [bounding box top-left x] [bounding box top-left y] [bounding box width] [bounding box height]
+    std::unordered_map<char, ECSEngine::SpriteComponent> tiles;
+    std::unordered_map<char, ECSEngine::Rect> tileBB;
+    std::regex tile;
     if (type == 1) {
-        const std::regex tile("(.) ([^ ]*) (\\d*) (\\d*) (\\d*) (\\d*)");
+        tile = std::regex("(.) ([^ ]*) (\\d*) (\\d*) (\\d*) (\\d*)");
     } else {
-        
+        tile = std::regex("(.) ([^ ]*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*) (\\d*)");
+    }
+    std::getline(map, line);
+    while (std::regex_match(line, m, tile)) {
+        std::string tileChar = m[1].str();
+        std::string filename = m[2].str();
+        int tlx = std::stoi(m[3].str());
+        int tly = std::stoi(m[4].str());
+        int w = std::stoi(m[5].str());
+        int h = std::stoi(m[6].str());
+        ECSEngine::Rect sBounds({tlx, tly}, w, h);
+        ECSEngine::SpriteID sId = engine.GetSpriteManager().RegisterTexture(path + filename, sBounds);
+        tiles[tileChar[0]] = {sId, sBounds, true};
+
+        if (type == 2) {
+            int bbx = std::stoi(m[7].str());
+            int bby = std::stoi(m[8].str());
+            int bbw = std::stoi(m[9].str());
+            int bbh = std::stoi(m[10].str());
+            ECSEngine::Rect bb({bbx, bby}, bbw, bbh);
+            tileBB[tileChar[0]] = bb;
+        }
+        std::getline(map, line);
+    }
+
+    // size is in tiles
+    const std::regex mapDim("map origin (\\d*) (\\d*) tile (\\d*) (\\d*) size (\\d*) (\\d*)");
+    std::regex_match(line, m, mapDim);
+    int ox = std::stoi(m[1].str());
+    int oy = std::stoi(m[2].str());
+    int tw = std::stoi(m[3].str());
+    int th = std::stoi(m[4].str());
+    int mw = std::stoi(m[5].str());
+    int mh = std::stoi(m[6].str());
+    ECSEngine::Point2D origin(ox, oy);
+    ECSEngine::Point2D tileSize(tw, th);
+    
+    std::getline(map, line);
+    for (int row = 0; row < mh; row++) {
+        for (int col = 0; col < mw; col++) {
+            char cTile = line[col];
+            ECSEngine::EntityID eTile = engine.GetEntityManager().CreateEntity("tile " + cTile);
+            ECSEngine::Point2D pos = origin + tileSize * ECSEngine::Point2D{row, col};
+            engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(eTile, {pos});
+            engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(eTile, tiles[cTile]);
+
+            if (type == 2) {
+                ECSEngine::CollisionComponent coll{1, 0, 0, 0, 0, 0, tileBB[cTile], tileBB[cTile]};
+                engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(eTile, coll);
+            }
+        }
+
+        std::getline(map, line);
     }
 }
 
