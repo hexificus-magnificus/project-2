@@ -8,6 +8,8 @@ namespace ECSEngine {
 template <typename... Components>
 class CollisionSystem : public System<Components...> {
 public:
+    CollisionSystem() : screenShake{10} {}
+
     const std::string& GetName() const override {
         static std::string name("CollisionSystem");
         return name;
@@ -81,6 +83,15 @@ public:
                                         eManager.GetComponent<ScoreComponent>(e1.GetID()).score += 1;
                                     }
                                 }
+                                if (c2.onGround && !c2.prevOnGround) {
+                                    eManager.GetComponent<CameraShake>(e2.GetID()).offset.y = screenShake;
+                                }
+                                if (c2.onLeftWall && !c2.prevOnLeftWall) {
+                                    eManager.GetComponent<CameraShake>(e2.GetID()).offset.x = -screenShake;
+                                }
+                                if (c2.onRightWall && !c2.prevOnRightWall) {
+                                    eManager.GetComponent<CameraShake>(e2.GetID()).offset.x = screenShake;
+                                }
                             } else {
                                 // not the player, bounce
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
@@ -102,6 +113,15 @@ public:
                                     if (eManager.HasComponent<ScoreComponent>(e2.GetID())) {
                                         eManager.GetComponent<ScoreComponent>(e2.GetID()).score += 1;
                                     }
+                                }
+                                if (c1.onGround && !c1.prevOnGround) {
+                                    eManager.GetComponent<CameraShake>(e1.GetID()).offset.y = screenShake;
+                                }
+                                if (c1.onLeftWall && !c1.prevOnLeftWall) {
+                                    eManager.GetComponent<CameraShake>(e1.GetID()).offset.x = -screenShake;
+                                }
+                                if (c1.onRightWall && !c1.prevOnRightWall) {
+                                    eManager.GetComponent<CameraShake>(e1.GetID()).offset.x = screenShake;
                                 }
                             } else {
                                 // not the player, bounce
@@ -252,6 +272,8 @@ private:
             ret[3] = true;
         }
     }
+
+    float screenShake;
 };
 
 }  // namespace ECSEngine

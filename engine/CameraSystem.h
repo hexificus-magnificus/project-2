@@ -33,6 +33,7 @@ public:
                 if (entityManager.IsValid(follower.entityID) && entityManager.HasComponent<LocationComponent>(follower.entityID)){
                     LocationComponent& location = entityManager.GetComponent<LocationComponent>(follower.entityID);
                     CollisionComponent& collision = entityManager.GetComponent<CollisionComponent>(follower.entityID);
+                    CameraShake& shake = entityManager.GetComponent<CameraShake>(follower.entityID);
                     Point2D centerOffset(collision.collisionBox.width/2.f, collision.collisionBox.height/2.f);
                     Point2D pos = windowManager.WorldToWindow(location.loc+centerOffset);
 
@@ -52,9 +53,16 @@ public:
                         cameraChange = camera.speed*(pos.x-softRight);
                     }
 
-                    Point2D center = windowManager.GetWorldCenter();
-                    center.x += cameraChange*camera.worldUnitsPerPixel; 
-                    windowManager.SetWorldCenter(center);
+                    camera.position = camera.position + Point2D(cameraChange*camera.worldUnitsPerPixel, 0.f);
+                    windowManager.SetWorldCenter(camera.position + shake.offset);
+
+                    shake.offset = 0.75 * shake.offset;
+                    if (abs(shake.offset.x) < 2) {
+                        shake.offset.x = 0;
+                    }
+                    if (abs(shake.offset.y) < 2) {
+                        shake.offset.y = 0;
+                    }
                     break;
                 }
             }
