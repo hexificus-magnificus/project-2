@@ -18,6 +18,7 @@ public:
                 MovementComponent& movement = entityManager.GetComponent<MovementComponent>(entity.GetID());
                 location.loc.x += movement.velocity.x;
                 location.loc.y += movement.velocity.y;
+                
             }
         }
         return kContinue;

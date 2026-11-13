@@ -56,6 +56,7 @@ int main(int argc, char* argv[]) {
 
     // Engine test code
     Engine engine(1024, 768, "Test Engine");
+    engine.GetWindowManager().GetWindow()->setFramerateLimit(60);
 
     // Load sounds
     engine.GetSoundManager().RegisterSound(gResourcePath + "footstep_grass_003.ogg", "land");
@@ -71,7 +72,7 @@ int main(int argc, char* argv[]) {
     ECSEngine::EntityID player = engine.GetEntityManager().CreateEntity("player");
     engine.GetEntityManager().AddComponent<ECSEngine::LocationComponent>(player, {{0, 0}});
     engine.GetEntityManager().AddComponent<ECSEngine::MovementComponent>(player, {{0, 0}});
-    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0, 25}, 0});
+    engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 0.01f}, 0});
     engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0});
     engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}, ECSEngine::Rect{ECSEngine::Point2D(0.f, 0.f), 128.f, 128.f}});
     ECSEngine::SpriteID playerSprite = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-characters-default.png", ECSEngine::Rect{{0.f, 0.f}, 128.f, 128.f});
@@ -98,10 +99,13 @@ int main(int argc, char* argv[]) {
     
 
     // Setup Camera
+    auto windowSize = engine.GetWindowManager().GetWindow()->getSize();
+    float width = static_cast<float>(windowSize.x);
+    float height = static_cast<float>(windowSize.y);
     ECSEngine::EntityID camera = engine.GetEntityManager().CreateEntity("camera");
-    ECSEngine::Rect hardRect{};
-    ECSEngine::Rect softRect{};
-    engine.GetEntityManager().AddComponent<ECSEngine::CameraComponent>(camera, {0, 1, hardRect, softRect, 10});
+    ECSEngine::Rect hardRect{{width*0.1f, 0.f}, width*0.8f, height};
+    ECSEngine::Rect softRect{{width*0.3f, 0.f}, width*0.4f, height};
+    engine.GetEntityManager().AddComponent<ECSEngine::CameraComponent>(camera, {0, 1, hardRect, softRect, 0.1f});
     engine.GetEntityManager().AddComponent<ECSEngine::CameraFollower>(camera, {player});
     engine.GetEntityManager().AddComponent<ECSEngine::CameraShake>(camera, {});
 

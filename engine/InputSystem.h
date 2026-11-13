@@ -28,6 +28,7 @@ public:
         for (const Entity& entity: entityManager){
             if (entityManager.IsValid(entity.GetID())&&entityManager.HasComponent<InputComponent>(entity.GetID())){
                 InputComponent& input = entityManager.GetComponent<InputComponent>(entity.GetID());
+                
                 EntityID player = input.entity;
 
                 if (entityManager.IsValid(player)&&entityManager.HasComponent<MovementComponent>(player)&&entityManager.HasComponent<CollisionComponent>(player)){

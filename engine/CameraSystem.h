@@ -31,7 +31,7 @@ public:
                 windowManager.SetWorldScale(camera.worldUnitsPerPixel);
                 if (entityManager.IsValid(follower.entityID) && entityManager.HasComponent<LocationComponent>(follower.entityID)){
                     LocationComponent& location = entityManager.GetComponent<LocationComponent>(follower.entityID);
-                    Point2D pos = windowManager.WorldToWindow(location.loc);
+                    Point2D pos = windowManager.WorldToWindow(location.loc+Point2D(64.f, 64.f));
 
                     float hardLeft = camera.hardExclusion.topLeft.x;
                     float hardRight = hardLeft + camera.hardExclusion.width;
@@ -50,7 +50,7 @@ public:
                     }
 
                     Point2D center = windowManager.GetWorldCenter();
-                    center.x += windowManager.WindowToWorld(cameraChange);
+                    center.x += cameraChange*camera.worldUnitsPerPixel; 
                     windowManager.SetWorldCenter(center);
                     break;
                 }
