@@ -1,0 +1,21 @@
+Implementation notes:
+
+Several systems require accessing multiple components from the same
+entity. Because components do not provide the EntityID they are
+associated with, these systems are unable to use the optimization of
+iterating through components rather than entities.
+Affected systems: CameraSystem, CollisionLateSystem, CollisionSystem,
+GravitySystem, InputSystem, MovementSystem, SpawnSystem, SpriteSystem
+
+CameraSystem: Implemented by Kelsey
+Collision(Late)System: Implemented by John
+GravitySystem: Implemented by John
+InputSystem: Implemented by Kelsey
+MovementSystem: Implemented by Kelsey
+ScoreSystem: Implemented by Kelsey
+SpawnSystem: Implemented by Kelsey
+SpriteSystem: Implemented by John
+ProcessEvents: Implemented by John
+
+Additional code support:
+cppreference.com

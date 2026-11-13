@@ -12,9 +12,10 @@ public:
 
     tSystemReturn Run(EngineView<Components...>* engine) override { 
         auto& entityManager = engine->GetEntityManager();
-        for (const Entity& entity: entityManager){
-            if (entityManager.IsValid(entity.GetID()) && entityManager.HasComponent<ScoreComponent>(entity.GetID())){
-                ScoreComponent& score = entityManager.GetComponent<ScoreComponent>(entity.GetID());
+        ComponentStorage<ScoreComponent>& sc = entityManager.GetComponentStorage<ScoreComponent>();
+        for (int idx = 0; idx < sc.mStorage.size(); idx++){
+            if (sc.mValid[idx]) {
+                ScoreComponent& score = sc.mStorage[idx];
 
                 int scoreNumber = score.score;
                 int firstDigit = scoreNumber/100;
