@@ -6,7 +6,8 @@
 namespace ECSEngine {
 
 const float kMaxRunVelocity = 10;
-const float kDashVelocity = 50;
+const float kDashVelocity = 20;
+const int kDashDuration = 10;
 const float kJumpVelocity = 25;
 const float kGroundRunAcceleration = 5;
 const float kAirRunAcceleration = 4;
@@ -38,6 +39,10 @@ public:
 
                     if (input.lastDash>0){
                         input.lastDash--;
+                    }
+                    if (input.lastDash == kDashInterval - kDashDuration) {
+                        int dir = 2 * (int)signbit(movement.velocity.x) - 1;
+                        movement.velocity.x -= dir * kDashVelocity * 0.5f;
                     }
 
                     if (collisionPlayer.onGround){
@@ -75,7 +80,7 @@ public:
                         }
                         input.lastDash=kDashInterval;
                         if (entityManager.HasComponent<GravityComponent>(player)) {
-                            entityManager.GetComponent<GravityComponent>(player).disabledTimer = 20;
+                            entityManager.GetComponent<GravityComponent>(player).disabledTimer = kDashDuration;
                             movement.velocity.y = 0;
                         }
                     }
