@@ -41,8 +41,7 @@ public:
                         input.lastDash--;
                     }
                     if (input.lastDash == kDashInterval - kDashDuration) {
-                        int dir = 2 * (int)signbit(movement.velocity.x) - 1;
-                        movement.velocity.x -= dir * kDashVelocity * 0.5f;
+                        movement.velocity.x *= 0.5;
                     }
 
                     if (collisionPlayer.onGround){
