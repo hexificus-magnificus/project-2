@@ -208,7 +208,7 @@ private:
         dynamicBox.topLeft = dynamicBox.topLeft +
             eManager.GetComponent<LocationComponent>(dynamic.GetID()).loc;
 
-        if (oldOverlaps[2]) {
+        if (oldOverlaps[2] && !oldOverlaps[0] && !oldOverlaps[1]) {
             c2.onCeiling = 1;
             //float diff = c2.collisionBox.topLeft.y - (c1.collisionBox.topLeft.y + c1.collisionBox.height);
             float diff = dynamicBox.topLeft.y- (staticBox.topLeft.y + staticBox.height);
