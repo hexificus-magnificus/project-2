@@ -17,5 +17,9 @@ SpawnSystem: Implemented by Kelsey
 SpriteSystem: Implemented by John
 ProcessEvents: Implemented by John
 
+Most systems listed above had small bugfixes from both people even if
+they were largely implemented by 1 person. The above list is therefore
+a general overview, not exclusive fact.
+
 Additional code support:
 cppreference.com
