@@ -8,6 +8,7 @@
 #include "MathUtil.h"
 #include "SpriteComponent.h"
 #include "SystemManager.h"
+#include "CollisionComponent.h"
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
@@ -31,7 +32,9 @@ public:
                 windowManager.SetWorldScale(camera.worldUnitsPerPixel);
                 if (entityManager.IsValid(follower.entityID) && entityManager.HasComponent<LocationComponent>(follower.entityID)){
                     LocationComponent& location = entityManager.GetComponent<LocationComponent>(follower.entityID);
-                    Point2D pos = windowManager.WorldToWindow(location.loc+Point2D(64.f, 64.f));
+                    CollisionComponent& collision = entityManager.GetComponent<CollisionComponent>(follower.entityID);
+                    Point2D centerOffset(collision.collisionBox.width/2.f, collision.collisionBox.height/2.f);
+                    Point2D pos = windowManager.WorldToWindow(location.loc+centerOffset);
 
                     float hardLeft = camera.hardExclusion.topLeft.x;
                     float hardRight = hardLeft + camera.hardExclusion.width;
