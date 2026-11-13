@@ -65,6 +65,10 @@ struct Rect {
     return os;
 }
 
+[[maybe_unused]] static Rect operator+(const Rect& r, const Point2D& p) {
+    return Rect(r.topLeft + p, r.width, r.height);
+}
+
 }  // namespace ECSEngine
 
 #endif  // MATHUTIL_H

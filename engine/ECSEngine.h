@@ -144,7 +144,17 @@ bool ECSEngine<Components...>::ProcessEvents() {
 
 template <typename... Components>
 void ECSEngine<Components...>::DebugDraw() {
-    mWindowManager.DebugFrameRect(mWindowManager.GetWindowBounds(), 255, 0, 0);
+    //mWindowManager.DebugFrameRect(mWindowManager.GetWindowBounds(), 255, 0, 0);
+
+    for (Entity e : mEntityManager.mEntities) {
+        if (!mEntityManager.HasComponent<CollisionComponent>(e.GetID()))
+            continue;
+        
+        CollisionComponent c = mEntityManager.GetComponent<CollisionComponent>(e.GetID());
+        LocationComponent l = mEntityManager.GetComponent<LocationComponent>(e.GetID());
+
+        mWindowManager.DebugFrameRect(c.collisionBox + l.loc, 255, 0, 0);
+    }
 }
 
 template <typename... Components>

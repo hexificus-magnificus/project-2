@@ -170,21 +170,22 @@ private:
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff + 1);
         }
-        if (oldOverlaps[0]) {
+        if (oldOverlaps[1]) {
             if (!c2.onRightWall) {
                 // just hit wall
                 engine->GetSoundManager().GetSound("wall").play();
             }
             c2.onRightWall = 1;
-            float diff = c2.collisionBox.topLeft.x + c2.collisionBox.width - c1.collisionBox.topLeft.x;
+            float diff = dynamicBox.topLeft.x + dynamicBox.width - staticBox.topLeft.x;
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff + 1, 0.f};
-        } else if (oldOverlaps[1]) {
+        } else if (oldOverlaps[0]) {
             if (!c2.onLeftWall) {
                 // just hit wall
+                engine->GetSoundManager().GetSound("wall").play();
             }
             c2.onLeftWall = 1;
-            float diff = c2.collisionBox.topLeft.x - (c1.collisionBox.topLeft.x + c1.collisionBox.width);
+            float diff = dynamicBox.topLeft.x - (staticBox.topLeft.x + staticBox.width);
             LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff - 1, 0.f};
         }
