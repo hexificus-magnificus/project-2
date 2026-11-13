@@ -29,72 +29,72 @@ public:
             if (entityManager.IsValid(entity.GetID())&&entityManager.HasComponent<InputComponent>(entity.GetID())){
                 InputComponent& input = entityManager.GetComponent<InputComponent>(entity.GetID());
                 EntityID player = input.entity;
-                MovementComponent& movement = entityManager.GetComponent<MovementComponent>(player);
 
-                CollisionComponent& collisionPlayer = entityManager.GetComponent<CollisionComponent>(player);
-                float acceleration;
+                if (entityManager.IsValid(player)&&entityManager.HasComponent<MovementComponent>(player)&&entityManager.HasComponent<CollisionComponent>(player)){
+                    MovementComponent& movement = entityManager.GetComponent<MovementComponent>(player);
 
-                if (input.lastDash>0){
-                    input.lastDash--;
-                }
+                    CollisionComponent& collisionPlayer = entityManager.GetComponent<CollisionComponent>(player);
+                    float acceleration;
 
-                if (collisionPlayer.onGround){
-                    acceleration = kGroundRunAcceleration;
-                }else{
-                    acceleration = kAirRunAcceleration;
-                }
-
-                //horizontal movement
-                if (input.keydown.test(Key::Right)){
-                    movement.velocity.x  = std::min(kMaxRunVelocity, movement.velocity.x+acceleration);
-                }else if (input.keydown.test(Key::Left)){
-                    movement.velocity.x = std::max(-kMaxRunVelocity, movement.velocity.x-acceleration);
-                }else{
-                    if (movement.velocity.x <0){
-                        movement.velocity.x = std::min(acceleration+movement.velocity.x, 0.0f);
-                    }else if (movement.velocity.x >0){
-                        movement.velocity.x = std::max(movement.velocity.x-acceleration, 0.0f);
-                    }    
-                }
-
-                if (input.keydown.test(Key::C) &&!input.lastKeydown.test(Key::C)&&input.lastDash==0&&movement.velocity.x!=0){
-                    if (movement.velocity.x<0){
-                        movement.velocity.x = -kDashVelocity;
-                    }else{
-                        movement.velocity.x = kDashVelocity;
+                    if (input.lastDash>0){
+                        input.lastDash--;
                     }
-                    input.lastDash=kDashInterval;
-                }
 
-                //jumping
-                if (input.keydown.test(Key::Z)&&!input.lastKeydown.test(Key::Z)){
                     if (collisionPlayer.onGround){
-                        movement.velocity.y = -kJumpVelocity;
+                        acceleration = kGroundRunAcceleration;
+                    }else{
+                        acceleration = kAirRunAcceleration;
                     }
-                    else if (collisionPlayer.onLeftWall){
-                        movement.velocity.y = -kJumpVelocity;
-                        movement.velocity.x = kMaxRunVelocity;
-                    }else if (collisionPlayer.onRightWall){
-                        movement.velocity.y = -kJumpVelocity;
-                        movement.velocity.x = -kMaxRunVelocity;
+
+                    //horizontal movement
+                    if (input.keydown.test(Key::Right)){
+                        movement.velocity.x  = std::min(kMaxRunVelocity, movement.velocity.x+acceleration);
+                    }else if (input.keydown.test(Key::Left)){
+                        movement.velocity.x = std::max(-kMaxRunVelocity, movement.velocity.x-acceleration);
+                    }else{
+                        if (movement.velocity.x <0){
+                            movement.velocity.x = std::min(acceleration+movement.velocity.x, 0.0f);
+                        }else if (movement.velocity.x >0){
+                            movement.velocity.x = std::max(movement.velocity.x-acceleration, 0.0f);
+                        }    
                     }
-                }else if (!input.keydown.test(Key::Z)&&input.lastKeydown.test(Key::Z)&&movement.velocity.y <0){
-                    movement.velocity.y = movement.velocity.y/2;
+
+                    if (input.keydown.test(Key::C) &&!input.lastKeydown.test(Key::C)&&input.lastDash==0&&movement.velocity.x!=0){
+                        if (movement.velocity.x<0){
+                            movement.velocity.x = -kDashVelocity;
+                        }else{
+                            movement.velocity.x = kDashVelocity;
+                        }
+                        input.lastDash=kDashInterval;
+                    }
+
+                    //jumping
+                    if (input.keydown.test(Key::Z)&&!input.lastKeydown.test(Key::Z)){
+                        if (collisionPlayer.onGround){
+                            movement.velocity.y = -kJumpVelocity;
+                        }
+                        else if (collisionPlayer.onLeftWall){
+                            movement.velocity.y = -kJumpVelocity;
+                            movement.velocity.x = kMaxRunVelocity;
+                        }else if (collisionPlayer.onRightWall){
+                            movement.velocity.y = -kJumpVelocity;
+                            movement.velocity.x = -kMaxRunVelocity;
+                        }
+                    }else if (!input.keydown.test(Key::Z)&&input.lastKeydown.test(Key::Z)&&movement.velocity.y <0){
+                        movement.velocity.y = movement.velocity.y/2;
+                    }
+
+                    if (input.keydown.test(Key::Down) && !collisionPlayer.onGround && movement.velocity.y>0){
+                        movement.velocity.y += kDownFallingAcceleration;
+                    }
+
+                    //wall sliding
+                    if (!collisionPlayer.onGround && movement.velocity.y>0 &&((collisionPlayer.onLeftWall &&input.keydown.test(Key::Left))||(collisionPlayer.onRightWall&&input.keydown.test(Key::Right)))){
+                        movement.velocity.y = std::min(movement.velocity.y, kWallFallingSpeed);
+                    }
+                    
                 }
-
-                if (input.keydown.test(Key::Down) && !collisionPlayer.onGround && movement.velocity.y>0){
-                    movement.velocity.y += kDownFallingAcceleration;
-                }
-
-                //wall sliding
-                if (!collisionPlayer.onGround && movement.velocity.y>0 &&((collisionPlayer.onLeftWall &&input.keydown.test(Key::Left))||(collisionPlayer.onRightWall&&input.keydown.test(Key::Right)))){
-                    movement.velocity.y = std::min(movement.velocity.y, kWallFallingSpeed);
-                }
-
-
-
                 input.lastKeydown = input.keydown;
-
 
             }
 
