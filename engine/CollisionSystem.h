@@ -167,13 +167,16 @@ public:
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
                                 LocationComponent& l1 = eManager.GetComponent<LocationComponent>(e1.GetID());
                                 LocationComponent& l2 = eManager.GetComponent<LocationComponent>(e2.GetID());
-                                Point2D dirMul{0.6f, -0.6f};
-                                Point2D onSurface1{(1 - c1.onLeftWall) * (1 - c1.onRightWall), 1 - c1.onGround};
-                                Point2D onSurface2{(1 - c2.onLeftWall) * (1 - c2.onRightWall), 1 - c2.onGround};
-                                m1.velocity = m1.velocity * dirMul;
-                                m2.velocity = m2.velocity * dirMul;
-                                l1.loc = l1.loc + m1.velocity * onSurface1;
-                                l2.loc = l2.loc + m2.velocity * onSurface2;
+                                // Point2D dirMul{0.6f, -0.6f};
+                                // Point2D onSurface1{(1 - c1.onLeftWall) * (1 - c1.onRightWall), 1 - c1.onGround};
+                                // Point2D onSurface2{(1 - c2.onLeftWall) * (1 - c2.onRightWall), 1 - c2.onGround};
+                                // m1.velocity = m1.velocity * dirMul;
+                                // m2.velocity = m2.velocity * dirMul;
+                                // l1.loc = l1.loc + m1.velocity * onSurface1;
+                                // l2.loc = l2.loc + m2.velocity * onSurface2;
+                                StaticDynamicCollide(e1, e2, engine);
+                                m1.velocity = {0, 0};
+                                m2.velocity = {0, 0};
                             }
                         }
                     }
