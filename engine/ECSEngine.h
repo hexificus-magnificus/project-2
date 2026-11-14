@@ -158,7 +158,7 @@ void ECSEngine<Components...>::DebugDraw() {
 template <typename... Components>
 void ECSEngine<Components...>::PressKey(unsigned int k) {
     ComponentStorage<InputComponent>& storage = mEntityManager.GetComponentStorage<InputComponent>();
-    for (int i = 0; i < storage.mStorage.size(); i++) {
+    for (size_t i = 0; i < storage.mStorage.size(); i++) {
         if (!storage.mValid[i]) {
             continue;
         }

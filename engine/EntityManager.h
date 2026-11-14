@@ -61,7 +61,7 @@ public:
     // behaviour is undefined if entity is invalid or has a T already
     template <typename T>
     void AddComponent(EntityID entity, T component) {
-        size_t componentIdx = mComponentPack.index<T>;
+        size_t componentIdx = pack_detail::packTypeToIndex<T, Components...>;
         ComponentStorage<T>& storage = GetComponentStorage<T>();
         size_t storageIdx = storage.mStorage.size();
         
@@ -88,7 +88,7 @@ public:
     // if the component storage vector reallocates
     template <typename T>
     void RemoveComponent(EntityID entity) {
-        size_t componentIdx = mComponentPack.index<T>;
+        size_t componentIdx = pack_detail::packTypeToIndex<T, Components...>;
         size_t storageIdx = mComponentIndices[entity][componentIdx];
         ComponentStorage<T>& storage = GetComponentStorage<T>();
         storage.mValid[storageIdx] = false;
@@ -100,7 +100,7 @@ public:
     // behaviour is undefined if entity is invalid
     template <typename T>
     bool HasComponent(EntityID entity) const {
-        size_t componentIdx = mComponentPack.index<T>;
+        size_t componentIdx = Pack<Components...>::template index<T>;
         size_t storageIdx = mComponentIndices[entity][componentIdx];
         return storageIdx != kNullComponent;
     }
@@ -110,7 +110,7 @@ public:
     // returned component is valid during engine lifetime or until RemoveComponent is called
     template <typename T>
     T& GetComponent(EntityID entity) {
-        size_t componentIdx = mComponentPack.index<T>;
+        size_t componentIdx = pack_detail::packTypeToIndex<T, Components...>;
         size_t storageIdx = mComponentIndices[entity][componentIdx];
         ComponentStorage<T>& storage = GetComponentStorage<T>();
         return storage.mStorage[storageIdx];

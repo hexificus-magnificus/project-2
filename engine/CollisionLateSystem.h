@@ -13,12 +13,12 @@ public:
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& eManager = engine->GetEntityManager();
 		for (auto e = eManager.begin(); e != eManager.end(); e++) {
-            if (!eManager.IsValid(e->GetID()) || !eManager.HasComponent<CollisionComponent>(e->GetID())) {
+            if (!eManager.IsValid(e->GetID()) || !eManager.template HasComponent<CollisionComponent>(e->GetID())) {
 				continue;
 			}
-            CollisionComponent& c = eManager.GetComponent<CollisionComponent>(e->GetID());
+            CollisionComponent& c = eManager.template GetComponent<CollisionComponent>(e->GetID());
             c.previousCollisionBox = c.collisionBox;
-            auto& location = eManager.GetComponent<LocationComponent>(e->GetID());
+            auto& location = eManager.template GetComponent<LocationComponent>(e->GetID());
             c.previousCollisionBox.topLeft = c.previousCollisionBox.topLeft + location.loc;
 
             if (c.staticEntity) {

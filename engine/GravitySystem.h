@@ -13,12 +13,12 @@ public:
 	{
 		auto& eManager = engine->GetEntityManager();
 		for (auto e = eManager.begin(); e != eManager.end(); e++) {
-			if (!eManager.HasComponent<GravityComponent>(e->GetID())) {
+			if (!eManager.template HasComponent<GravityComponent>(e->GetID())) {
 				continue;
 			}
-			GravityComponent& grav = eManager.GetComponent<GravityComponent>(e->GetID());
+			GravityComponent& grav = eManager.template GetComponent<GravityComponent>(e->GetID());
 			// if something has a GravityComponent, it should also have a MovementComponent
-			MovementComponent& vel = eManager.GetComponent<MovementComponent>(e->GetID());
+			MovementComponent& vel = eManager.template GetComponent<MovementComponent>(e->GetID());
 
 			if (grav.disabledTimer > 0) {
 				grav.disabledTimer--;
