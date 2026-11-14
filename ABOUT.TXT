@@ -7,6 +7,10 @@ iterating through components rather than entities.
 Affected systems: CameraSystem, CollisionLateSystem, CollisionSystem,
 GravitySystem, InputSystem, MovementSystem, SpawnSystem, SpriteSystem
 
+In our InputSystem, dashing can only happen if the player is already in motion. 
+
+In SpawnSystem, 10 stars are spawned and have a random initial velocity.
+
 CameraSystem: Implemented by Kelsey
 Collision(Late)System: Implemented by John
 GravitySystem: Implemented by John
@@ -19,7 +23,7 @@ ProcessEvents: Implemented by John
 EntityManager: Implemented by John
 SoundManager: Implemented by John
 SpriteManager: Implemented by John
-WindowManager: Implemented by Kelse
+WindowManager: Implemented by Kelsey
 
 Most systems listed above had small bugfixes from both people even if
 they were largely implemented by 1 person. The above list is therefore
@@ -27,3 +31,23 @@ a general overview, not exclusive fact.
 
 Additional code support:
 cppreference.com
+Stack Overflow — Reference for generating random numbers with rand(). https://stackoverflow.com/a/12657984
+ChatGPT — Debugging assistance, explanations, code suggestions, and code review.
+
+AI Use and Prompts: (sections of code sometimes included with prompts)
+
+- Why does my player sometimes jump unexpectedly high when colliding with a wall? 
+- How can I prevent the player from getting stuck at the corner of a wall? 
+- Why does my landing sound play repeatedly? 
+- Why does the player continue dashing until I release the movement key? 
+- How can I return the player to normal speed after 10 frames?
+- How should sound buffers be stored so sounds remain valid? 
+- How can I fix [this] compiler warning?
+
+Code taken from AI: A lamba function in EntityManager.h inside RemoveEntity. This was used as our previous Implementation
+    only marked an entity as invalid instead of actually removing it. The lambda function removes the the components so that
+    the storage slot can be used again. 
+
+ChatGPT was useful for explaining unfamiliar concepts, identifying potential bugs, 
+and occasionally suggesting ways to implement or improve certain features. AI was 
+most useful as a debugging tool.
