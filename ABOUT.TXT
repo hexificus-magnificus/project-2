@@ -7,6 +7,10 @@ iterating through components rather than entities.
 Affected systems: CameraSystem, CollisionLateSystem, CollisionSystem,
 GravitySystem, InputSystem, MovementSystem, SpawnSystem, SpriteSystem
 
+In addition to storing the previous frame's bounding box, CollisionLateSystem
+also copies the previous frame's values for whether the entity touches a
+surface to enable on collision checks
+
 In our InputSystem, dashing can only happen if the player is already in motion.
 Dashing sets the players velocity in the y direction to 0 and disables
 gravity for the duration of the dash in order to improve control feel
