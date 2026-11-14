@@ -19,8 +19,9 @@ public:
 
     static constexpr size_t kNullComponent = std::numeric_limits<size_t>::max();
 
-    // creates an entity and returns its id
-    // this EntityID is valid during the engine lifetime or until RemoveEntity is called on it
+    // Creates an entity and returns its ID
+    // Entity IDs remain valid until the entity is removed
+    // Removed entity IDs may be reused by newly created entities
     [[nodiscard]] EntityID CreateEntity(const std::string& name) {
         EntityID id = mEntities.size();
         if (!mFreeEntities.empty()) {
@@ -80,8 +81,11 @@ public:
         mComponentIndices[entity][componentIdx] = storageIdx;
     }
 
-    // invalidates the component T associated with entity
-    // behaviour is undefined if entity is invalid or doesn't have a T
+    // Returns a reference to component T associated with entity
+    // Requires a valid entity that has component T
+    // The reference becomes invalid if the component or entity is removed
+    // Adding more components of type T may also invalidate the reference
+    // if the component storage vector reallocates
     template <typename T>
     void RemoveComponent(EntityID entity) {
         size_t componentIdx = mComponentPack.index<T>;

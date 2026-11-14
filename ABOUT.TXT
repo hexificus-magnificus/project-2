@@ -16,6 +16,10 @@ ScoreSystem: Implemented by Kelsey
 SpawnSystem: Implemented by Kelsey
 SpriteSystem: Implemented by John
 ProcessEvents: Implemented by John
+EntityManager: Implemented by John
+SoundManager: Implemented by John
+SpriteManager: Implemented by John
+WindowManager: Implemented by Kelse
 
 Most systems listed above had small bugfixes from both people even if
 they were largely implemented by 1 person. The above list is therefore
