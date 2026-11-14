@@ -25,12 +25,12 @@ public:
         auto& eManager = engine->GetEntityManager();
         auto& wManager = engine->GetWindowManager();
         for (auto e = eManager.cbegin(); e != eManager.cend(); e++) {
-            if (!eManager.IsValid(e->GetID()) || !eManager.HasComponent<SpriteComponent>(e->GetID())) {
+            if (!eManager.IsValid(e->GetID()) || !eManager.template HasComponent<SpriteComponent>(e->GetID())) {
                 continue;
             }
-            SpriteComponent spriteC = eManager.GetComponent<SpriteComponent>(e->GetID());
+            SpriteComponent spriteC = eManager.template GetComponent<SpriteComponent>(e->GetID());
             // in provided files, it says SpriteComponent only exists when LocationComponent does
-            LocationComponent loc = eManager.GetComponent<LocationComponent>(e->GetID());
+            LocationComponent loc = eManager.template GetComponent<LocationComponent>(e->GetID());
 
             sf::Sprite sprite = engine->GetSpriteManager().GetSprite(spriteC.textureID);
             if (spriteC.worldSpace) {

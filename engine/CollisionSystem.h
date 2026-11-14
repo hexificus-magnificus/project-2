@@ -22,10 +22,10 @@ public:
             if (!eManager.IsValid(e1.GetID())) {
                 continue;
             }
-            if (!eManager.HasComponent<CollisionComponent>(e1.GetID())) {
+            if (!eManager.template HasComponent<CollisionComponent>(e1.GetID())) {
 				continue;
 			}
-            CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(e1.GetID());
+            CollisionComponent& c1 = eManager.template GetComponent<CollisionComponent>(e1.GetID());
 
             c1.prevOnGround = c1.onGround;
             c1.prevOnCeiling = c1.onCeiling;
@@ -38,25 +38,25 @@ public:
             c1.onRightWall = 0;
         }
 
-		for (int i = 0; i < eManager.mEntities.size(); i++) {
+		for (size_t i = 0; i < eManager.mEntities.size(); i++) {
             Entity& e1 = eManager.mEntities[i];
             if (!eManager.IsValid(e1.GetID())) {
                 continue;
             }
-            if (!eManager.HasComponent<CollisionComponent>(e1.GetID())) {
+            if (!eManager.template HasComponent<CollisionComponent>(e1.GetID())) {
 				continue;
 			}
-            CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(e1.GetID());
+            CollisionComponent& c1 = eManager.template GetComponent<CollisionComponent>(e1.GetID());
 
             for (auto j = i + 1; j < eManager.mEntities.size(); j++) {
                 Entity& e2 = eManager.mEntities[j];
                 if (!eManager.IsValid(e2.GetID())) {
                     continue;
                 }
-                if (!eManager.HasComponent<CollisionComponent>(e2.GetID())) {
+                if (!eManager.template HasComponent<CollisionComponent>(e2.GetID())) {
                     continue;
                 }
-                CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(e2.GetID());
+                CollisionComponent& c2 = eManager.template GetComponent<CollisionComponent>(e2.GetID());
                 if (c1.staticEntity && c2.staticEntity) {
                     continue;
                 }
@@ -64,8 +64,8 @@ public:
                 std::vector<bool> overlaps{false, false, false, false};
                 Rect box1 = c1.collisionBox;
                 Rect box2 = c2.collisionBox;
-                box1.topLeft = box1.topLeft+ eManager.GetComponent<LocationComponent>(e1.GetID()).loc;
-                box2.topLeft = box2.topLeft+ eManager.GetComponent<LocationComponent>(e2.GetID()).loc;
+                box1.topLeft = box1.topLeft+ eManager.template GetComponent<LocationComponent>(e1.GetID()).loc;
+                box2.topLeft = box2.topLeft+ eManager.template GetComponent<LocationComponent>(e2.GetID()).loc;
                 RectOverlap(box1, box2, overlaps);
 
                 if (!(overlaps[0] || overlaps[1] || overlaps[2] || overlaps[3])) {
@@ -76,33 +76,33 @@ public:
                         } else {
                             // c1 static, c2 not
                             StaticDynamicCollide(e1, e2, engine);
-                            if (eManager.HasComponent<ScoreComponent>(e2.GetID())) {
+                            if (eManager.template HasComponent<ScoreComponent>(e2.GetID())) {
                                 if (c1.doesDamage) {
                                     Damage(e2, eManager);
-                                    if (eManager.HasComponent<ScoreComponent>(e1.GetID())) {
-                                        eManager.GetComponent<ScoreComponent>(e1.GetID()).score += 1;
+                                    if (eManager.template HasComponent<ScoreComponent>(e1.GetID())) {
+                                        eManager.template GetComponent<ScoreComponent>(e1.GetID()).score += 1;
                                     }
                                 }
                                 if (c2.onGround) {
-                                    MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
+                                    MovementComponent& m2 = eManager.template GetComponent<MovementComponent>(e2.GetID());
                                     m2.velocity.y = 0;
                                     if (!c2.prevOnGround) {
-                                        eManager.GetComponent<CameraShake>(e2.GetID()).offset.y = screenShake;
+                                        eManager.template GetComponent<CameraShake>(e2.GetID()).offset.y = screenShake;
                                         engine->GetSoundManager().GetSound("land").play();
                                     }
                                     
                                 }
                                 if (c2.onLeftWall && !c2.prevOnLeftWall) {
-                                    eManager.GetComponent<CameraShake>(e2.GetID()).offset.x = -screenShake;
+                                    eManager.template GetComponent<CameraShake>(e2.GetID()).offset.x = -screenShake;
                                     engine->GetSoundManager().GetSound("wall").play();
                                 }
                                 if (c2.onRightWall && !c2.prevOnRightWall) {
-                                    eManager.GetComponent<CameraShake>(e2.GetID()).offset.x = screenShake;
+                                    eManager.template GetComponent<CameraShake>(e2.GetID()).offset.x = screenShake;
                                     engine->GetSoundManager().GetSound("wall").play();
                                 }
                             } else {
                                 // not the player, bounce
-                                MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
+                                MovementComponent& m2 = eManager.template GetComponent<MovementComponent>(e2.GetID());
                                 if (c2.onGround && !c2.prevOnGround) {
                                     m2.velocity = m2.velocity * Point2D{1.f, -0.6f};
                                 }
@@ -115,32 +115,32 @@ public:
                         if (c2.staticEntity) {
                             // c1 not, c2 static
                             StaticDynamicCollide(e2, e1, engine);
-                            if (eManager.HasComponent<ScoreComponent>(e1.GetID())) {
+                            if (eManager.template HasComponent<ScoreComponent>(e1.GetID())) {
                                 if (c2.doesDamage) {
                                     Damage(e1, eManager);
-                                    if (eManager.HasComponent<ScoreComponent>(e2.GetID())) {
-                                        eManager.GetComponent<ScoreComponent>(e2.GetID()).score += 1;
+                                    if (eManager.template HasComponent<ScoreComponent>(e2.GetID())) {
+                                        eManager.template GetComponent<ScoreComponent>(e2.GetID()).score += 1;
                                     }
                                 }
                                 if (c1.onGround) {
-                                    MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
+                                    MovementComponent& m1 = eManager.template GetComponent<MovementComponent>(e1.GetID());
                                     m1.velocity.y = 0;
                                     if (!c1.prevOnGround) {
-                                        eManager.GetComponent<CameraShake>(e1.GetID()).offset.y = screenShake;
+                                        eManager.template GetComponent<CameraShake>(e1.GetID()).offset.y = screenShake;
                                         engine->GetSoundManager().GetSound("land").play();
                                     }
                                 }
                                 if (c1.onLeftWall && !c1.prevOnLeftWall) {
-                                    eManager.GetComponent<CameraShake>(e1.GetID()).offset.x = -screenShake;
+                                    eManager.template GetComponent<CameraShake>(e1.GetID()).offset.x = -screenShake;
                                     engine->GetSoundManager().GetSound("wall").play();
                                 }
                                 if (c1.onRightWall && !c1.prevOnRightWall) {
-                                    eManager.GetComponent<CameraShake>(e1.GetID()).offset.x = screenShake;
+                                    eManager.template GetComponent<CameraShake>(e1.GetID()).offset.x = screenShake;
                                     engine->GetSoundManager().GetSound("wall").play();
                                 }
                             } else {
                                 // not the player, bounce
-                                MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
+                                MovementComponent& m1 = eManager.template GetComponent<MovementComponent>(e1.GetID());
                                 if (c1.onGround && !c1.prevOnGround) {
                                     std::cout << m1.velocity << "\n";
                                     m1.velocity = m1.velocity * Point2D{1.f, -0.6f};
@@ -151,20 +151,20 @@ public:
                             }
                         } else {
                             // both dynamic
-                            if (eManager.HasComponent<ScoreComponent>(e1.GetID())) {
+                            if (eManager.template HasComponent<ScoreComponent>(e1.GetID())) {
                                 // collect e2
                                 eManager.RemoveEntity(e2.GetID());
-                                eManager.GetComponent<ScoreComponent>(e1.GetID()).score++;
+                                eManager.template GetComponent<ScoreComponent>(e1.GetID()).score++;
                                 engine->GetSoundManager().GetSound("sget").play();
-                            } else if (eManager.HasComponent<ScoreComponent>(e2.GetID())) {
+                            } else if (eManager.template HasComponent<ScoreComponent>(e2.GetID())) {
                                 // collect e1
                                 eManager.RemoveEntity(e1.GetID());
-                                eManager.GetComponent<ScoreComponent>(e2.GetID()).score++;
+                                eManager.template GetComponent<ScoreComponent>(e2.GetID()).score++;
                                 engine->GetSoundManager().GetSound("sget").play();
                             } else {
                                 // 2 stars - bounce
-                                MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
-                                MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
+                                MovementComponent& m1 = eManager.template GetComponent<MovementComponent>(e1.GetID());
+                                MovementComponent& m2 = eManager.template GetComponent<MovementComponent>(e2.GetID());
                                 // Point2D dirMul{0.6f, -0.6f};
                                 // Point2D onSurface1{(1 - c1.onLeftWall) * (1 - c1.onRightWall), 1 - c1.onGround};
                                 // Point2D onSurface2{(1 - c2.onLeftWall) * (1 - c2.onRightWall), 1 - c2.onGround};
@@ -190,35 +190,35 @@ private:
     // the previous frame's bounding boxes
     void StaticDynamicCollide(Entity staticO, Entity dynamic, EngineView<Components...>* engine) {
         auto& eManager = engine->GetEntityManager();
-        CollisionComponent& c1 = eManager.GetComponent<CollisionComponent>(staticO.GetID());
-        CollisionComponent& c2 = eManager.GetComponent<CollisionComponent>(dynamic.GetID());
+        CollisionComponent& c1 = eManager.template GetComponent<CollisionComponent>(staticO.GetID());
+        CollisionComponent& c2 = eManager.template GetComponent<CollisionComponent>(dynamic.GetID());
 
         std::vector<bool> oldOverlaps{false, false, false, false};
         Rect box1 = c1.previousCollisionBox;
         Rect box2 = c2.previousCollisionBox;
-        // box1.topLeft = box1.topLeft + eManager.GetComponent<LocationComponent>(staticO.GetID()).loc;
-        // box2.topLeft = box2.topLeft + eManager.GetComponent<LocationComponent>(dynamic.GetID()).loc;
+        // box1.topLeft = box1.topLeft + eManager.template GetComponent<LocationComponent>(staticO.GetID()).loc;
+        // box2.topLeft = box2.topLeft + eManager.template GetComponent<LocationComponent>(dynamic.GetID()).loc;
         RectOverlap(box1, box2, oldOverlaps);
 
         Rect staticBox = c1.collisionBox;
         Rect dynamicBox = c2.collisionBox;
 
         staticBox.topLeft = staticBox.topLeft +
-            eManager.GetComponent<LocationComponent>(staticO.GetID()).loc;
+            eManager.template GetComponent<LocationComponent>(staticO.GetID()).loc;
 
         dynamicBox.topLeft = dynamicBox.topLeft +
-            eManager.GetComponent<LocationComponent>(dynamic.GetID()).loc;
+            eManager.template GetComponent<LocationComponent>(dynamic.GetID()).loc;
 
         if (oldOverlaps[2] && !oldOverlaps[0] && !oldOverlaps[1]) {
             c2.onCeiling = 1;
             //float diff = c2.collisionBox.topLeft.y - (c1.collisionBox.topLeft.y + c1.collisionBox.height);
             float diff = dynamicBox.topLeft.y- (staticBox.topLeft.y + staticBox.height);
-            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            LocationComponent& l2 = eManager.template GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff - 1);
         } else if (oldOverlaps[3]) {
             c2.onGround = 1;
             float diff = dynamicBox.topLeft.y + dynamicBox.height- staticBox.topLeft.y;
-            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            LocationComponent& l2 = eManager.template GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D(0.f, diff + 1);
         }
 
@@ -226,8 +226,8 @@ private:
         std::vector<bool> overlaps{false, false, false, false};
         Rect nbox1 = c1.collisionBox;
         Rect nbox2 = c2.collisionBox;
-        nbox1.topLeft = nbox1.topLeft+ eManager.GetComponent<LocationComponent>(staticO.GetID()).loc;
-        nbox2.topLeft = nbox2.topLeft+ eManager.GetComponent<LocationComponent>(dynamic.GetID()).loc;
+        nbox1.topLeft = nbox1.topLeft+ eManager.template GetComponent<LocationComponent>(staticO.GetID()).loc;
+        nbox2.topLeft = nbox2.topLeft+ eManager.template GetComponent<LocationComponent>(dynamic.GetID()).loc;
         RectOverlap(nbox1, nbox2, overlaps);
         if (overlaps[0] || overlaps[1] || overlaps[2] || overlaps[3]) {
             return;
@@ -236,12 +236,12 @@ private:
         else if (oldOverlaps[1]) {
             c2.onRightWall = 1;
             float diff = dynamicBox.topLeft.x + dynamicBox.width - staticBox.topLeft.x;
-            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            LocationComponent& l2 = eManager.template GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff + 1, 0.f};
         } else if (oldOverlaps[0]) {
             c2.onLeftWall = 1;
             float diff = dynamicBox.topLeft.x - (staticBox.topLeft.x + staticBox.width);
-            LocationComponent& l2 = eManager.GetComponent<LocationComponent>(dynamic.GetID());
+            LocationComponent& l2 = eManager.template GetComponent<LocationComponent>(dynamic.GetID());
             l2.loc = l2.loc - Point2D{diff - 1, 0.f};
         }
     }

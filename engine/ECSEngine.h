@@ -146,9 +146,9 @@ void ECSEngine<Components...>::DebugDraw() {
     //mWindowManager.DebugFrameRect(mWindowManager.GetWindowBounds(), 255, 0, 0);
 
     for (Entity e : mEntityManager.mEntities) {
-        if (mEntityManager.IsValid(e.GetID()) && mEntityManager.HasComponent<CollisionComponent>(e.GetID())) {
-            CollisionComponent c = mEntityManager.GetComponent<CollisionComponent>(e.GetID());
-            LocationComponent l = mEntityManager.GetComponent<LocationComponent>(e.GetID());
+        if (mEntityManager.IsValid(e.GetID()) && mEntityManager.template HasComponent<CollisionComponent>(e.GetID())) {
+            CollisionComponent c = mEntityManager.template GetComponent<CollisionComponent>(e.GetID());
+            LocationComponent l = mEntityManager.template GetComponent<LocationComponent>(e.GetID());
 
             mWindowManager.DebugFrameRect(c.collisionBox + l.loc, 255, 0, 0);
         }
@@ -157,7 +157,7 @@ void ECSEngine<Components...>::DebugDraw() {
 
 template <typename... Components>
 void ECSEngine<Components...>::PressKey(unsigned int k) {
-    ComponentStorage<InputComponent>& storage = mEntityManager.GetComponentStorage<InputComponent>();
+    ComponentStorage<InputComponent>& storage = mEntityManager.templateGetComponentStorage<InputComponent>();
     for (size_t i = 0; i < storage.mStorage.size(); i++) {
         if (!storage.mValid[i]) {
             continue;
@@ -168,8 +168,8 @@ void ECSEngine<Components...>::PressKey(unsigned int k) {
 
 template <typename... Components>
 void ECSEngine<Components...>::ReleaseKey(unsigned int k) {
-    ComponentStorage<InputComponent>& storage = mEntityManager.GetComponentStorage<InputComponent>();
-    for (int i = 0; i < storage.mStorage.size(); i++) {
+    ComponentStorage<InputComponent>& storage = mEntityManager.template GetComponentStorage<InputComponent>();
+    for (size_t i = 0; i < storage.mStorage.size(); i++) {
         if (!storage.mValid[i]) {
             continue;
         }

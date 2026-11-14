@@ -17,8 +17,8 @@ public:
         std::vector<EntityID> spawners;
         for (const Entity& entity: entityManager){
             EntityID id = entity.GetID();
-            if (entityManager.IsValid(id)&&entityManager.HasComponent<SpawnComponent>(id)){
-                SpawnComponent& spawn = entityManager.GetComponent<SpawnComponent>(entity.GetID());
+            if (entityManager.IsValid(id)&&entityManager.template HasComponent<SpawnComponent>(id)){
+                SpawnComponent& spawn = entityManager.template GetComponent<SpawnComponent>(entity.GetID());
 
                 if (spawn.totalSpawns>0){
                     spawn.timeToNextSpawn--;
@@ -33,8 +33,8 @@ public:
         }
         for (EntityID spawnerID : spawners){
 
-            auto spawn = entityManager.GetComponent<SpawnComponent>(spawnerID);
-            LocationComponent spawnLocation = entityManager.GetComponent<LocationComponent>(spawnerID);
+            auto spawn = entityManager.template GetComponent<SpawnComponent>(spawnerID);
+            LocationComponent spawnLocation = entityManager.template GetComponent<LocationComponent>(spawnerID);
 
             EntityID spawnedID = entityManager.CreateEntity(spawn.spawnType);
 
@@ -42,19 +42,19 @@ public:
             int randVelocityx = (rand() % 51) - 25; //https://stackoverflow.com/a/12657984
             int randVelocityy = (rand() % 31) - 10; 
             movement.velocity = Point2D(randVelocityx, randVelocityy);
-            entityManager.AddComponent<MovementComponent>(spawnedID, movement);
+            entityManager.template AddComponent<MovementComponent>(spawnedID, movement);
 
             LocationComponent location;
             location.loc = spawnLocation.loc;
-            if (entityManager.HasComponent<CollisionComponent>(spawnerID)) {
+            if (entityManager.template HasComponent<CollisionComponent>(spawnerID)) {
                 int velXDir = randVelocityx >= 0 ? 1 : -1;
-                float bboxWidth = entityManager.GetComponent<CollisionComponent>(spawnerID).collisionBox.width;
+                float bboxWidth = entityManager.template GetComponent<CollisionComponent>(spawnerID).collisionBox.width;
                 location.loc = location.loc + Point2D{bboxWidth * velXDir, 0.f};
             }
-            entityManager.AddComponent<LocationComponent>(spawnedID, location);
+            entityManager.template AddComponent<LocationComponent>(spawnedID, location);
 
             GravityComponent grav{{0.f, 2.f}, 0};
-            entityManager.AddComponent<GravityComponent>(spawnedID, grav);
+            entityManager.template AddComponent<GravityComponent>(spawnedID, grav);
 
             SpriteComponent spriteComponent;
             spriteComponent.textureID = spawn.spawnTextureID;
@@ -64,14 +64,14 @@ public:
             spriteComponent.bounds.topLeft = {bounds.position.x, bounds.position.y};
             spriteComponent.bounds.width = bounds.size.x;
             spriteComponent.bounds.height = bounds.size.y;
-            entityManager.AddComponent<SpriteComponent>(spawnedID, spriteComponent);
+            entityManager.template AddComponent<SpriteComponent>(spawnedID, spriteComponent);
 
             CollisionComponent collision{}; //initializes collision flags to 0 ChatGPT (may change)
             collision.staticEntity = false;
             collision.doesDamage = false;
             collision.collisionBox = spriteComponent.bounds;
             collision.previousCollisionBox = collision.collisionBox;
-            entityManager.AddComponent<CollisionComponent>(spawnedID, collision);       
+            entityManager.template AddComponent<CollisionComponent>(spawnedID, collision);       
             
         }
         return kContinue; 

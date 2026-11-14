@@ -26,15 +26,15 @@ public:
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& entityManager = engine->GetEntityManager();
         for (const Entity& entity: entityManager){
-            if (entityManager.IsValid(entity.GetID())&&entityManager.HasComponent<InputComponent>(entity.GetID())){
+            if (entityManager.IsValid(entity.GetID())&&entityManager.template HasComponent<InputComponent>(entity.GetID())){
                 InputComponent& input = entityManager.GetComponent<InputComponent>(entity.GetID());
                 
                 EntityID player = input.entity;
 
-                if (entityManager.IsValid(player)&&entityManager.HasComponent<MovementComponent>(player)&&entityManager.HasComponent<CollisionComponent>(player)){
-                    MovementComponent& movement = entityManager.GetComponent<MovementComponent>(player);
+                if (entityManager.IsValid(player)&&entityManager.template HasComponent<MovementComponent>(player)&&entityManager.template HasComponent<CollisionComponent>(player)){
+                    MovementComponent& movement = entityManager.template GetComponent<MovementComponent>(player);
 
-                    CollisionComponent& collisionPlayer = entityManager.GetComponent<CollisionComponent>(player);
+                    CollisionComponent& collisionPlayer = entityManager.template GetComponent<CollisionComponent>(player);
                     float acceleration;
 
                     if (input.lastDash>0){

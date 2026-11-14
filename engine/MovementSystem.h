@@ -13,9 +13,9 @@ public:
     tSystemReturn Run(EngineView<Components...>* engine) override { 
         auto& entityManager = engine->GetEntityManager();
         for (const Entity& entity: entityManager){
-            if (entityManager.IsValid(entity.GetID()) && entityManager.HasComponent<LocationComponent>(entity.GetID()) &&entityManager.HasComponent<MovementComponent>(entity.GetID())){
-                LocationComponent& location = entityManager.GetComponent<LocationComponent>(entity.GetID());
-                MovementComponent& movement = entityManager.GetComponent<MovementComponent>(entity.GetID());
+            if (entityManager.IsValid(entity.GetID()) && entityManager.template HasComponent<LocationComponent>(entity.GetID()) &&entityManager.template HasComponent<MovementComponent>(entity.GetID())){
+                LocationComponent& location = entityManager.template GetComponent<LocationComponent>(entity.GetID());
+                MovementComponent& movement = entityManager.template GetComponent<MovementComponent>(entity.GetID());
                 location.loc.x += movement.velocity.x;
                 location.loc.y += movement.velocity.y;
                 

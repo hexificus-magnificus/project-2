@@ -26,14 +26,14 @@ public:
         auto& entityManager = engine->GetEntityManager();
         auto& windowManager = engine->GetWindowManager();
         for (const Entity& entity: entityManager){
-            if (entityManager.IsValid(entity.GetID())&&entityManager.HasComponent<CameraFollower>(entity.GetID())&&entityManager.HasComponent<CameraComponent>(entity.GetID())){
-                CameraFollower& follower = entityManager.GetComponent<CameraFollower>(entity.GetID());
-                CameraComponent& camera = entityManager.GetComponent<CameraComponent>(entity.GetID());
+            if (entityManager.IsValid(entity.GetID())&&entityManager.template HasComponent<CameraFollower>(entity.GetID())&&entityManager.template HasComponent<CameraComponent>(entity.GetID())){
+                CameraFollower& follower = entityManager.template GetComponent<CameraFollower>(entity.GetID());
+                CameraComponent& camera = entityManager.template GetComponent<CameraComponent>(entity.GetID());
                 windowManager.SetWorldScale(camera.worldUnitsPerPixel);
-                if (entityManager.IsValid(follower.entityID) && entityManager.HasComponent<LocationComponent>(follower.entityID)){
-                    LocationComponent& location = entityManager.GetComponent<LocationComponent>(follower.entityID);
-                    CollisionComponent& collision = entityManager.GetComponent<CollisionComponent>(follower.entityID);
-                    CameraShake& shake = entityManager.GetComponent<CameraShake>(follower.entityID);
+                if (entityManager.IsValid(follower.entityID) && entityManager.template HasComponent<LocationComponent>(follower.entityID)){
+                    LocationComponent& location = entityManager.template GetComponent<LocationComponent>(follower.entityID);
+                    CollisionComponent& collision = entityManager.template GetComponent<CollisionComponent>(follower.entityID);
+                    CameraShake& shake = entityManager.template GetComponent<CameraShake>(follower.entityID);
                     Point2D centerOffset(collision.collisionBox.width/2.f, collision.collisionBox.height/2.f);
                     Point2D pos = windowManager.WorldToWindow(location.loc+centerOffset);
 

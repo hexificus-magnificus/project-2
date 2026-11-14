@@ -12,8 +12,8 @@ public:
 
     tSystemReturn Run(EngineView<Components...>* engine) override { 
         auto& entityManager = engine->GetEntityManager();
-        ComponentStorage<ScoreComponent>& sc = entityManager.GetComponentStorage<ScoreComponent>();
-        for (int idx = 0; idx < sc.mStorage.size(); idx++){
+        ComponentStorage<ScoreComponent>& sc = entityManager.template GetComponentStorage<ScoreComponent>();
+        for (size_t idx = 0; idx < sc.mStorage.size(); idx++){
             if (sc.mValid[idx]) {
                 ScoreComponent& score = sc.mStorage[idx];
 
@@ -24,8 +24,8 @@ public:
                 int digits[3] = {firstDigit, secondDigit, thirdDigit};
                 for (int i = 0; i<3; i++){
                     EntityID entityID = score.digitID[i];
-                    if (entityManager.IsValid(entityID)&&entityManager.HasComponent<SpriteComponent>(entityID)){
-                        SpriteComponent& sprite = entityManager.GetComponent<SpriteComponent>(entityID);
+                    if (entityManager.IsValid(entityID)&&entityManager.template HasComponent<SpriteComponent>(entityID)){
+                        SpriteComponent& sprite = entityManager.template GetComponent<SpriteComponent>(entityID);
                         sprite.textureID = score.digitTextureID[digits[i]];
                     }
                }
