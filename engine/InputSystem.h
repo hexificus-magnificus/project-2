@@ -80,10 +80,10 @@ public:
                         //     movement.velocity.x = kDashVelocity;
                         // }
                         // input.lastDash=kDashInterval;
-                        // if (entityManager.HasComponent<GravityComponent>(player)) {
-                        //     entityManager.GetComponent<GravityComponent>(player).disabledTimer = kDashDuration;
-                        //     movement.velocity.y = 0;
-                        // }
+                        if (entityManager.HasComponent<GravityComponent>(player)) {
+                            entityManager.GetComponent<GravityComponent>(player).disabledTimer = kDashDuration;
+                            movement.velocity.y = 0;
+                        }
                         if (collisionPlayer.onLeftWall) {
                             movement.velocity.x = kDashVelocity;
                         } else if (collisionPlayer.onRightWall) {

@@ -7,7 +7,10 @@ iterating through components rather than entities.
 Affected systems: CameraSystem, CollisionLateSystem, CollisionSystem,
 GravitySystem, InputSystem, MovementSystem, SpawnSystem, SpriteSystem
 
-In our InputSystem, dashing can only happen if the player is already in motion. 
+In our InputSystem, dashing can only happen if the player is already in motion.
+Dashing sets the players velocity in the y direction to 0 and disables
+gravity for the duration of the dash in order to improve control feel
+and make the final walljump/dashing challenge possible
 
 In SpawnSystem, 10 stars are spawned and have a random initial velocity.
 
