@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
     engine.GetEntityManager().AddComponent<ECSEngine::RespawnComponent>(player, {playerPos});
     engine.GetEntityManager().AddComponent<ECSEngine::MovementComponent>(player, {{0, 0}});
     engine.GetEntityManager().AddComponent<ECSEngine::GravityComponent>(player, {{0.f, 1.5f}, 0});
-    engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0});
+    engine.GetEntityManager().AddComponent<ECSEngine::ScoreComponent>(player, {0, {}, {}});
     engine.GetEntityManager().AddComponent<ECSEngine::CollisionComponent>(player, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ECSEngine::Rect{ECSEngine::Point2D(34.f, 32.f), 62.f, 96.f}, ECSEngine::Rect{ECSEngine::Point2D(32.f, 32.f), 64.f, 96.f}});
     ECSEngine::SpriteID playerSprite = engine.GetSpriteManager().RegisterTexture(gResourcePath + "spritesheet-characters-default.png", ECSEngine::Rect{{0.f, 0.f}, 128.f, 128.f});
     engine.GetEntityManager().AddComponent<ECSEngine::SpriteComponent>(player, {playerSprite, ECSEngine::Rect{ECSEngine::Point2D(32.f, 32.f), 64.f, 64.f}, true});

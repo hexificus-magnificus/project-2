@@ -27,7 +27,7 @@ public:
         auto& entityManager = engine->GetEntityManager();
         for (const Entity& entity: entityManager){
             if (entityManager.IsValid(entity.GetID())&&entityManager.template HasComponent<InputComponent>(entity.GetID())){
-                InputComponent& input = entityManager.GetComponent<InputComponent>(entity.GetID());
+                InputComponent& input = entityManager.template GetComponent<InputComponent>(entity.GetID());
                 
                 EntityID player = input.entity;
 

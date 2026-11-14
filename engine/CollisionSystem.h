@@ -17,7 +17,7 @@ public:
 
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& eManager = engine->GetEntityManager();
-        for (int i = 0; i < eManager.mEntities.size(); i++) {
+        for (size_t i = 0; i < eManager.mEntities.size(); i++) {
             Entity e1 = eManager.mEntities[i];
             if (!eManager.IsValid(e1.GetID())) {
                 continue;

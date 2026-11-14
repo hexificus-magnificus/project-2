@@ -35,7 +35,7 @@ public:
             mComponentIndices.push_back({});
         }
 
-        for (int i = 0; i < sizeof...(Components); i++) {
+        for (size_t i = 0; i < sizeof...(Components); i++) {
             mComponentIndices[id][i] = kNullComponent;
         }
 

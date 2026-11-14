@@ -19,7 +19,7 @@ constexpr int packSize<Arg, Args...> = 1 + packSize<Args...>;
 template <int QueryIndex, typename... Args>
 struct _packIndexToType {
     // empty args and any index -- base case, type does not exist in pack
-    static_assert(QueryIndex != QueryIndex);
+    static_assert(QueryIndex <0, "Invalid pack index");
 };
 
 template <typename Arg, typename... Args>
