@@ -51,6 +51,8 @@ Code taken from AI: A lamba function in EntityManager.h inside RemoveEntity. Thi
     only marked an entity as invalid instead of actually removing it. The lambda function removes the the components so that
     the storage slot can be used again. 
 
+    entityManager.template was provided by AI in order to resolve compilation errors in the GitHub Actions build.
+
 ChatGPT was useful for explaining unfamiliar concepts, identifying potential bugs, 
 and occasionally suggesting ways to implement or improve certain features. AI was 
 most useful as a debugging tool.
