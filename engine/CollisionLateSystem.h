@@ -13,7 +13,7 @@ public:
     tSystemReturn Run(EngineView<Components...>* engine) override {
         auto& eManager = engine->GetEntityManager();
 		for (auto e = eManager.begin(); e != eManager.end(); e++) {
-            if (!eManager.HasComponent<CollisionComponent>(e->GetID())) {
+            if (!eManager.IsValid(e->GetID()) || !eManager.HasComponent<CollisionComponent>(e->GetID())) {
 				continue;
 			}
             CollisionComponent& c = eManager.GetComponent<CollisionComponent>(e->GetID());

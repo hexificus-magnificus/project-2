@@ -120,7 +120,7 @@ void LoadMap(Engine& engine, const std::string& path, const std::string& file) {
             }
             if (cTile == 'S') {
                 // this is a spawner
-                ECSEngine::SpawnComponent sp{eTile, "what does this even do", star, 120, 60, 10};
+                ECSEngine::SpawnComponent sp{eTile, "Star", star, 120, 60, 10};
                 engine.GetEntityManager().AddComponent<ECSEngine::SpawnComponent>(eTile, sp);
             }
         }

@@ -11,9 +11,9 @@ const int kDashDuration = 10;
 const float kJumpVelocity = 25;
 const float kGroundRunAcceleration = 5;
 const float kAirRunAcceleration = 4;
-const int kDashInterval = 25;
-const float kWallFallingSpeed = 3;
-const float kDownFallingAcceleration = 3;
+const int kDashInterval = 60;
+const float kWallFallingSpeed = 2;
+const float kDownFallingAcceleration = 12;
 
 template <typename... Components>
 class InputSystem : public System<Components...> {
@@ -41,7 +41,11 @@ public:
                         input.lastDash--;
                     }
                     if (input.lastDash == kDashInterval - kDashDuration) {
-                        movement.velocity.x *= 0.5;
+                        if (movement.velocity.x > kMaxRunVelocity) {
+                            movement.velocity.x = kMaxRunVelocity;
+                        } else if (movement.velocity.x < -kMaxRunVelocity) {
+                            movement.velocity.x = -kMaxRunVelocity;
+                        }
                     }
 
                     if (collisionPlayer.onGround){
@@ -67,21 +71,32 @@ public:
                         }    
                     }
 
-                    if (input.keydown.test(Key::Down)) {
-                        movement.velocity.y += kDownFallingAcceleration;
-                    }
+                    
 
-                    if (input.keydown.test(Key::C) &&!input.lastKeydown.test(Key::C)&&input.lastDash==0&&movement.velocity.x!=0){
-                        if (movement.velocity.x<0){
-                            movement.velocity.x = -kDashVelocity;
-                        }else{
+                    if (input.keydown.test(Key::C) &&!input.lastKeydown.test(Key::C)&&input.lastDash==0){
+                        // if (movement.velocity.x<0){
+                        //     movement.velocity.x = -kDashVelocity;
+                        // }else{
+                        //     movement.velocity.x = kDashVelocity;
+                        // }
+                        // input.lastDash=kDashInterval;
+                        // if (entityManager.HasComponent<GravityComponent>(player)) {
+                        //     entityManager.GetComponent<GravityComponent>(player).disabledTimer = kDashDuration;
+                        //     movement.velocity.y = 0;
+                        // }
+                        if (collisionPlayer.onLeftWall) {
                             movement.velocity.x = kDashVelocity;
+                        } else if (collisionPlayer.onRightWall) {
+                            movement.velocity.x = -kDashVelocity;
+                        } else if (input.keydown.test(Key::Right)) {
+                            movement.velocity.x = kDashVelocity;
+                        } else if (input.keydown.test(Key::Left)) {
+                            movement.velocity.x = -kDashVelocity;
+                        } else if (movement.velocity.x != 0) {
+                            movement.velocity.x =
+                                movement.velocity.x > 0 ? kDashVelocity : -kDashVelocity;
                         }
-                        input.lastDash=kDashInterval;
-                        if (entityManager.HasComponent<GravityComponent>(player)) {
-                            entityManager.GetComponent<GravityComponent>(player).disabledTimer = kDashDuration;
-                            movement.velocity.y = 0;
-                        }
+                        input.lastDash = kDashInterval;
                     }
 
                     //jumping
@@ -89,17 +104,23 @@ public:
                         
                         if (collisionPlayer.onGround){
                             movement.velocity.y = -kJumpVelocity;
+                            engine->GetSoundManager().GetSound("jump").play();
                         } else if (collisionPlayer.onLeftWall){
                             movement.velocity.y = -kJumpVelocity;
                             movement.velocity.x = kMaxRunVelocity;
+                            engine->GetSoundManager().GetSound("jump").play();
                         } else if (collisionPlayer.onRightWall){
                             movement.velocity.y = -kJumpVelocity;
                             movement.velocity.x = -kMaxRunVelocity;
+                            engine->GetSoundManager().GetSound("jump").play();
                         }
                     }else if (!input.keydown.test(Key::Z)&&input.lastKeydown.test(Key::Z)&&movement.velocity.y <0){
                         movement.velocity.y = movement.velocity.y/2;
                     }
-
+                    
+                    if (!collisionPlayer.onGround && movement.velocity.y > 0) {
+                        movement.velocity.y += 2.0f;
+                    }
                     if (input.keydown.test(Key::Down) && !collisionPlayer.onGround && movement.velocity.y>0){
                         movement.velocity.y += kDownFallingAcceleration;
                     }

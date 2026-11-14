@@ -159,14 +159,12 @@ public:
                             } else if (eManager.HasComponent<ScoreComponent>(e2.GetID())) {
                                 // collect e1
                                 eManager.RemoveEntity(e1.GetID());
-                                eManager.GetComponent<ScoreComponent>(e1.GetID()).score++;
+                                eManager.GetComponent<ScoreComponent>(e2.GetID()).score++;
                                 engine->GetSoundManager().GetSound("sget").play();
                             } else {
                                 // 2 stars - bounce
                                 MovementComponent& m1 = eManager.GetComponent<MovementComponent>(e1.GetID());
                                 MovementComponent& m2 = eManager.GetComponent<MovementComponent>(e2.GetID());
-                                LocationComponent& l1 = eManager.GetComponent<LocationComponent>(e1.GetID());
-                                LocationComponent& l2 = eManager.GetComponent<LocationComponent>(e2.GetID());
                                 // Point2D dirMul{0.6f, -0.6f};
                                 // Point2D onSurface1{(1 - c1.onLeftWall) * (1 - c1.onRightWall), 1 - c1.onGround};
                                 // Point2D onSurface2{(1 - c2.onLeftWall) * (1 - c2.onRightWall), 1 - c2.onGround};

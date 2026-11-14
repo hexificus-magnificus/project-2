@@ -34,7 +34,8 @@ public:
 
             sf::Sprite sprite = engine->GetSpriteManager().GetSprite(spriteC.textureID);
             if (spriteC.worldSpace) {
-                sprite.setScale({wManager.GetWorldScale(), wManager.GetWorldScale()});
+                float scale = 1.0f / wManager.GetWorldScale();
+                sprite.setScale({scale, scale});
                 Point2D wLoc = wManager.WorldToWindow(loc.loc);
                 sprite.setPosition({wLoc.x, wLoc.y});
             } else {

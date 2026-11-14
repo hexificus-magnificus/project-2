@@ -9,7 +9,6 @@
 #include "InputComponent.h"
 #include "LocationComponent.h"
 #include "MathUtil.h"
-#include "Keyboard.h"
 #include "ScoreComponent.h"
 #include "SoundManager.h"
 #include "SpawnComponent.h"
@@ -147,7 +146,7 @@ void ECSEngine<Components...>::DebugDraw() {
     //mWindowManager.DebugFrameRect(mWindowManager.GetWindowBounds(), 255, 0, 0);
 
     for (Entity e : mEntityManager.mEntities) {
-        if (mEntityManager.HasComponent<CollisionComponent>(e.GetID())) {
+        if (mEntityManager.IsValid(e.GetID()) && mEntityManager.HasComponent<CollisionComponent>(e.GetID())) {
             CollisionComponent c = mEntityManager.GetComponent<CollisionComponent>(e.GetID());
             LocationComponent l = mEntityManager.GetComponent<LocationComponent>(e.GetID());
 

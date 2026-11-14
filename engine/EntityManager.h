@@ -42,6 +42,16 @@ public:
     }
 
     void RemoveEntity(EntityID entity) {
+        if (!IsValid(entity)) {
+        return;
+    }
+
+    ([&] {
+        if (HasComponent<Components>(entity)) {
+            RemoveComponent<Components>(entity);
+        }
+    }(), ...); //lambda function provided by chatGPT to remove all components of the entity
+
         mEntitiesValid[entity] = false;
         mFreeEntities.push_back(entity);
     }

@@ -9,7 +9,7 @@ void SoundManager::RegisterSound(const std::string& soundPath, const std::string
 }
 
 sf::Sound& SoundManager::GetSound(const std::string& soundName) {
-    if (mSoundObjects.contains(soundName)) {
+    if (mSoundObjects.find(soundName) != mSoundObjects.end()) {
         return mSoundObjects.at(soundName);
     } else {
         return nullSound;

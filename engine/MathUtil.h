@@ -5,8 +5,7 @@
 
 namespace ECSEngine {
 
-#include <cstdio>
-#include <vector>
+
 
 struct Point2D {
     float x, y;
